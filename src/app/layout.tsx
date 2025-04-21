@@ -29,6 +29,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
       </body>
     </html>
   );
