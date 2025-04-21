@@ -1,11 +1,11 @@
 # public/admin/config.yml
 backend:
-  name: test-repo # Use test-repo for local UI/config testing
+  name: git-gateway # For Netlify integration
   branch: main # Or your default branch (e.g., master)
 
 # Local backend is used during development (npm run dev)
 # Comment out or remove before deploying to Netlify
-local_backend: true
+# local_backend: true
 
 media_folder: "public/images/uploads" # Where media files are stored relative to root
 public_folder: "/images/uploads" # The src attribute for the media file in the frontend
