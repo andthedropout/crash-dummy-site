@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import Footer from "@/components/layout/footer";
 import { MatrixCanvas } from "@/components/layout/MatrixCanvas";
 
 const inter = Inter({ 
@@ -36,7 +35,6 @@ export default function RootLayout({
         >
           <MatrixCanvas />
           {children}
-          <Footer />
         </ThemeProvider>
       </body>
     </html>
