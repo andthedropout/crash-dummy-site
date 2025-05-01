@@ -12,7 +12,6 @@ const MatrixBackground: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let animationFrameId: number;
     let intervalId: number;
 
     const setupCanvas = () => {

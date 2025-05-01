@@ -2,14 +2,14 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
 } from "@/components/ui/card";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { ArrowRight, MapPin, Clock, Phone } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Color variables that can be easily adjusted
 const colors = {
