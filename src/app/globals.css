@@ -2,13 +2,466 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes dashoffset {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 100;
+  }
+}
+
+@keyframes tracer {
+  0% {
+    stroke-dashoffset: 1000;
+    opacity: 0.3;
+  }
+  25% {
+    opacity: 0.8;
+  }
+  75% {
+    opacity: 0.6;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+
+@keyframes outerGlow {
+  0% {
+    opacity: 0.1;
+    box-shadow: 0 0 5px 1px rgba(57, 255, 20, 0.2);
+  }
+  30% {
+    opacity: 0.3;
+    box-shadow: 0 0 12px 3px rgba(57, 255, 20, 0.3);
+  }
+  70% {
+    opacity: 0.4;
+    box-shadow: 0 0 15px 5px rgba(57, 255, 20, 0.4);
+  }
+  100% {
+    opacity: 0.1;
+    box-shadow: 0 0 5px 1px rgba(57, 255, 20, 0.2);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+@keyframes scanline-horizontal {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.3;
+  }
+  5% {
+    opacity: 0.5;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  20% {
+    opacity: 0.3;
+  }
+  25% {
+    opacity: 0.5;
+  }
+  30% {
+    opacity: 0.4;
+  }
+  35% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 0.7;
+  }
+  45% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  55% {
+    opacity: 0.4;
+  }
+  60% {
+    opacity: 0.7;
+  }
+  65% {
+    opacity: 0.3;
+  }
+  70% {
+    opacity: 0.5;
+  }
+  75% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  85% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  95% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes dataPoint {
+  0% {
+    opacity: 0;
+    r: 0;
+  }
+  30% {
+    opacity: 0.7;
+    r: 2;
+  }
+  70% {
+    opacity: 1;
+    r: 3;
+  }
+  100% {
+    opacity: 0;
+    r: 1;
+  }
+}
+
+@keyframes trace {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  40% {
+    stroke-dashoffset: 600;
+  }
+  70% {
+    stroke-dashoffset: 300;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    filter: drop-shadow(0 0 2px #39FF14);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px #39FF14);
+  }
+  100% {
+    filter: drop-shadow(0 0 2px #39FF14);
+  }
+}
+
+/* Sci-Fi Button Styles */
+.sci-fi-button .border-glow {
+  filter: drop-shadow(0 0 2px #39FF14);
+}
+
+.sci-fi-button .border-glow:hover {
+  filter: drop-shadow(0 0 4px #39FF14);
+}
+
+.sci-fi-button .corner-glow {
+  filter: drop-shadow(0 0 3px #39FF14);
+}
+
+.sci-fi-button .corner-glow:hover {
+  filter: drop-shadow(0 0 5px #39FF14);
+}
+
+.sci-fi-button .tech-detail {
+  filter: drop-shadow(0 0 2px #39FF14);
+}
+
+.sci-fi-button .circuit-pattern {
+  filter: drop-shadow(0 0 2px #39FF14);
+  animation: dashoffset 8s linear infinite;
+}
+
+/* New tracer class */
+.sci-fi-button .tracer-path {
+  stroke: #39FF14;
+  stroke-width: 2px;
+  fill: none;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  filter: drop-shadow(0 0 5px #39FF14);
+  opacity: 0;
+  animation: tracer 6s linear infinite alternate;
+}
+
+.sci-fi-button:hover .tracer-path {
+  animation: tracer 3s linear infinite alternate;
+}
+
+/* Enhanced scanline effects */
+.sci-fi-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(57, 255, 20, 0) 0%, 
+    rgba(57, 255, 20, 0.1) 50%, 
+    rgba(57, 255, 20, 0) 100%);
+  background-size: 100% 8px;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Horizontal scanline */
+.sci-fi-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, 
+    rgba(57, 255, 20, 0) 0%, 
+    rgba(57, 255, 20, 0.07) 50%, 
+    rgba(57, 255, 20, 0) 100%);
+  background-size: 200% 100%;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.sci-fi-button:hover::before {
+  opacity: 0.5;
+  animation: scanline 3s linear infinite;
+}
+
+.sci-fi-button:hover::after {
+  opacity: 0.5;
+  animation: scanline-horizontal 4s linear infinite;
+}
+
+/* Add flicker effect for technical look */
+.sci-fi-button .flicker {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(57, 255, 20, 0.03);
+  opacity: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.sci-fi-button:hover .flicker {
+  opacity: 1;
+  animation: flicker 8s step-end infinite;
+}
+
+/* COMPLETELY INDEPENDENT ANIMATIONS FOR EACH BUTTON */
+
+/* Button 0 */
+.tracer-button-0 .tracer-line {
+  stroke: #39FF14;
+  stroke-width: 1px;
+  fill: none;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: trace 11.3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: -2.3s;
+  opacity: 0.3;
+  filter: drop-shadow(0 0 3px #39FF14);
+}
+
+.tracer-button-0 .data-point {
+  fill: #39FF14;
+  r: 2;
+  filter: drop-shadow(0 0 2px #39FF14);
+  opacity: 0;
+  animation: dataPoint 3.7s ease-in-out infinite;
+  animation-delay: -0.9s;
+}
+
+.tracer-button-0 .outer-glow {
+  animation: outerGlow 7.2s ease-in-out infinite;
+  animation-delay: -3.1s;
+}
+
+.tracer-button-0 .flicker {
+  animation-delay: 1.3s;
+}
+
+/* Button 1 */
+.tracer-button-1 .tracer-line {
+  stroke: #39FF14;
+  stroke-width: 1px;
+  fill: none;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: trace 13.7s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+  animation-delay: -7.8s;
+  opacity: 0.3;
+  filter: drop-shadow(0 0 3px #39FF14);
+}
+
+.tracer-button-1 .data-point {
+  fill: #39FF14;
+  r: 2;
+  filter: drop-shadow(0 0 2px #39FF14);
+  opacity: 0;
+  animation: dataPoint 5.3s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  animation-delay: -2.7s;
+}
+
+.tracer-button-1 .outer-glow {
+  animation: outerGlow 9.1s ease-in-out infinite;
+  animation-delay: -4.5s;
+}
+
+.tracer-button-1 .flicker {
+  animation-delay: 0.5s;
+}
+
+/* Button 2 */
+.tracer-button-2 .tracer-line {
+  stroke: #39FF14;
+  stroke-width: 1px;
+  fill: none;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: trace 17.1s ease-in-out infinite;
+  animation-delay: -11.5s;
+  opacity: 0.3;
+  filter: drop-shadow(0 0 3px #39FF14);
+}
+
+.tracer-button-2 .data-point {
+  fill: #39FF14;
+  r: 2;
+  filter: drop-shadow(0 0 2px #39FF14);
+  opacity: 0;
+  animation: dataPoint 4.1s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+  animation-delay: -1.5s;
+}
+
+.tracer-button-2 .outer-glow {
+  animation: outerGlow 11.7s ease-in-out infinite;
+  animation-delay: -8.3s;
+}
+
+.tracer-button-2 .flicker {
+  animation-delay: 3.1s;
+}
+
+/* Button 3 */
+.tracer-button-3 .tracer-line {
+  stroke: #39FF14;
+  stroke-width: 1px;
+  fill: none;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: trace 19.3s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+  animation-delay: -15.7s;
+  opacity: 0.3;
+  filter: drop-shadow(0 0 3px #39FF14);
+}
+
+.tracer-button-3 .data-point {
+  fill: #39FF14;
+  r: 2;
+  filter: drop-shadow(0 0 2px #39FF14);
+  opacity: 0;
+  animation: dataPoint 6.2s ease-in-out infinite;
+  animation-delay: -4.3s;
+}
+
+.tracer-button-3 .outer-glow {
+  animation: outerGlow 13.3s ease-in-out infinite;
+  animation-delay: -10.8s;
+}
+
+.tracer-button-3 .flicker {
+  animation-delay: 2.3s;
+}
+
+/* Hover effects for all buttons */
+.sci-fi-button:hover .tracer-line {
+  animation-duration: 5s !important;
+  opacity: 0.6;
+}
+
+.sci-fi-button:hover .data-point {
+  animation-duration: 3s !important;
+}
+
+.sci-fi-button:hover .outer-glow {
+  animation-duration: 4s !important;
+}
+
+.sci-fi-button .text-glow {
+  text-shadow: 0 0 0 transparent;
+}
+
+.sci-fi-button:hover .text-glow {
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.7), 
+               0 0 20px rgba(57, 255, 20, 0.5), 
+               0 0 30px rgba(57, 255, 20, 0.3);
+}
+
+.sci-fi-button .bracket-glow {
+  text-shadow: 0 0 0 transparent;
+}
+
+.sci-fi-button:hover .bracket-glow {
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.7), 
+               0 0 20px rgba(57, 255, 20, 0.5);
+}
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 }
-
-
 
 @layer base {
   :root {
@@ -65,8 +518,6 @@
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {

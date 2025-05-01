@@ -11,19 +11,19 @@ media_folder: "public/images/uploads" # Where media files are stored relative to
 public_folder: "/images/uploads" # The src attribute for the media file in the frontend
 
 # Optional: Enable Editorial Workflow
-publish_mode: editorial_workflow
+# publish_mode: editorial_workflow
 
 collections:
-  - name: "pages" # Example: Managing individual pages
-    label: "Pages"
-    folder: "src/content/pages" # Store content files here (e.g., src/content/pages/home.md)
-    create: true # Allow creating new pages
-    slug: "{{slug}}" # Filename based on title or manual input
-    fields: # Define the content structure for pages
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime", required: false }
-      - { label: "Body", name: "body", widget: "markdown" }
-      # Add fields for hero sections, features, testimonials etc.
+  # - name: "pages" # Example: Managing individual pages
+  #   label: "Pages"
+  #   folder: "src/content/pages" # Store content files here (e.g., src/content/pages/home.md)
+  #   create: true # Allow creating new pages
+  #   slug: "{{slug}}" # Filename based on title or manual input
+  #   fields: # Define the content structure for pages
+  #     - { label: "Title", name: "title", widget: "string" }
+  #     - { label: "Publish Date", name: "date", widget: "datetime", required: false }
+  #     - { label: "Body", name: "body", widget: "markdown" }
+  #     # Add fields for hero sections, features, testimonials etc.
 
   - name: "settings" # Example: Managing global site settings
     label: "Site Settings"
