@@ -1,10 +1,9 @@
-'use client';
 import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Footer from "@/components/layout/footer";
-import React, { useEffect, useRef } from 'react';
+import { MatrixCanvas } from "@/components/layout/MatrixCanvas";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -26,65 +25,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let w = canvas.width = window.innerWidth;
-    let h = canvas.height = window.innerHeight;
-    const cols = Math.floor(w / 20) + 1;
-    const ypos = Array(cols).fill(0);
-
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, w, h);
-
-    const matrix = () => {
-      if (!ctx) return;
-      ctx.fillStyle = '#0001';
-      ctx.fillRect(0, 0, w, h);
-
-      ctx.fillStyle = '#0f0';
-      ctx.font = '15pt monospace';
-
-      ypos.forEach((y, ind) => {
-        const text = String.fromCharCode(Math.random() * 128);
-        const x = ind * 20;
-        ctx.fillText(text, x, y);
-
-        if (y > 100 + Math.random() * 10000) {
-          ypos[ind] = 0;
-        } else {
-          ypos[ind] = y + 20;
-        }
-      });
-    };
-
-    const intervalId = setInterval(matrix, 50);
-
-    const handleResize = () => {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-      const newCols = Math.floor(w / 20) + 1;
-      ypos.length = 0;
-      ypos.push(...Array(newCols).fill(0));
-      if (ctx) {
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, w, h);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      clearInterval(intervalId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${montserrat.variable}`}>
@@ -94,7 +34,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, zIndex: -1, opacity: 0.5 }}></canvas>
+          <MatrixCanvas />
           {children}
           <Footer />
         </ThemeProvider>
