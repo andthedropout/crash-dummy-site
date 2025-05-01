@@ -1,12 +1,15 @@
 'use client';
 
-import * as React from "react";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight, MapPin, Clock, Phone } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 // Color variables that can be easily adjusted
 const colors = {
