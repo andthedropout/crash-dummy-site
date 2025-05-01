@@ -1,6 +1,6 @@
 'use client'; // Mark this component as a Client Component
 
-import { MatrixBackground } from "@/components/layout/MatrixBackground";
+import { MatrixBackground } from "@/components/layout/MatrixBackground"; // Restore this import
 import { CyberpunkButtons } from "@/components/ui/CyberpunkButtons"; // Use named import
 import Tilt from 'react-parallax-tilt'; // Import the tilt component
 
@@ -10,13 +10,13 @@ import Tilt from 'react-parallax-tilt'; // Import the tilt component
 export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-start pb-16 text-white overflow-hidden">
-      {/* Wrap MatrixBackground in its own Tilt */}
+      {/* Restore the Tilt wrapper for MatrixBackground */}
       <Tilt
-        tiltMaxAngleX={5} // Subtle tilt for background
+        tiltMaxAngleX={5} 
         tiltMaxAngleY={5}
         perspective={1000}
         trackOnWindow={true}
-        transitionSpeed={2000} // Slower transition for background
+        transitionSpeed={2000} 
         glareEnable={true}
         glareMaxOpacity={0.5}
         glareColor="#39FF14"
@@ -26,7 +26,7 @@ export default function Home() {
         style={{ transformStyle: 'preserve-3d' }}
       >
         <MatrixBackground />
-      </Tilt>
+      </Tilt> 
 
       {/* Global Glow Layer - Temporarily Commented Out */}
       {/* <div
@@ -59,8 +59,8 @@ export default function Home() {
           />
         </div>
 
-        {/* Right Column: Use the CyberpunkButtons component - Add higher z-index */}
-        <div className="w-1/3 flex items-center justify-end relative z-50"> {/* Add relative and higher z-index */} 
+        {/* Right Column: Use the CyberpunkButtons component - Keep the z-index */}
+        <div className="w-1/3 flex items-center justify-end relative z-50"> {/* Keep relative and higher z-index */} 
           <CyberpunkButtons />
         </div>
       </Tilt>

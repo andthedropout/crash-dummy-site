@@ -21,8 +21,8 @@ export function MatrixCanvas() {
 
     const matrix = () => {
       if (!ctx) return;
-      // Use a lower alpha for less performance impact
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; 
+      // Revert fillStyle alpha back to original for denser effect
+      ctx.fillStyle = '#0001'; // Original value from layout
       ctx.fillRect(0, 0, w, h);
 
       ctx.fillStyle = '#0f0'; // Green text
@@ -41,8 +41,8 @@ export function MatrixCanvas() {
       });
     };
 
-    // Lower the interval frequency for better performance
-    const intervalId = setInterval(matrix, 100); 
+    // Revert interval frequency back to original speed
+    const intervalId = setInterval(matrix, 50); // Original value from layout
 
     const handleResize = () => {
       if (!canvas || !ctx) return;

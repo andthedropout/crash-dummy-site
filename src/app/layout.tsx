@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { MatrixCanvas } from "@/components/layout/MatrixCanvas";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -33,7 +32,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <MatrixCanvas />
           {children}
         </ThemeProvider>
       </body>
