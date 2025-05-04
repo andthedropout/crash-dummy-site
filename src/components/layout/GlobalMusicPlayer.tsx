@@ -3,6 +3,7 @@
 import React from 'react';
 import { useMusicPlayer } from '@/context/MusicPlayerContext';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 // Removed CyberpunkButton import
 // import { CyberpunkButton } from '@/components/ui/CyberpunkButton';
 
@@ -13,23 +14,28 @@ const PauseIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="currentCol
 export const GlobalMusicPlayer: React.FC = () => {
   const { isPlaying, currentTrack, togglePlayPause, isLargeViewActive } = useMusicPlayer();
 
+  const handleTogglePlayPause = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    togglePlayPause();
+  };
+
   return (
     <motion.div 
       layoutId="music-player-container" 
-      className="fixed top-4 right-4 z-[100] bg-black/80 border border-lime-400/70 backdrop-blur-sm rounded-sm p-3 text-lime-300 font-mono flex items-center space-x-3 shadow-lime-500/10 shadow-md"
+      className="fixed top-4 right-4 z-[100] bg-black/80 border border-lime-400/70 backdrop-blur-sm rounded-sm p-3 text-lime-300 font-mono flex items-center space-x-3 shadow-lime-500/10 shadow-md cursor-pointer"
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
       {!isLargeViewActive && (
         <>
           <button 
-            onClick={togglePlayPause} 
-            className="w-7 h-7 flex items-center justify-center rounded-sm bg-lime-900/50 hover:bg-lime-700/60 border border-lime-500/50 hover:border-lime-400 text-lime-300 transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-lime-400 focus:ring-offset-2 focus:ring-offset-black/50"
+            onClick={handleTogglePlayPause}
+            className="w-7 h-7 flex items-center justify-center rounded-sm bg-lime-900/50 hover:bg-lime-700/60 border border-lime-500/50 hover:border-lime-400 text-lime-300 transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-lime-400 focus:ring-offset-2 focus:ring-offset-black/50 z-10"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isPlaying ? <PauseIcon /> : <PlayIcon />} 
           </button>
 
-          <div className="text-sm overflow-hidden whitespace-nowrap">
+          <Link href="/music" className="flex-grow overflow-hidden whitespace-nowrap" legacyBehavior={false}>
             {currentTrack ? (
               <div>
                 <p className="font-medium truncate text-lime-100 tracking-wide">{currentTrack.title}</p>
@@ -38,7 +44,7 @@ export const GlobalMusicPlayer: React.FC = () => {
             ) : (
               <p className="text-lime-400/60 italic">No track loaded</p>
             )}
-          </div>
+          </Link>
         </>
       )}
     </motion.div>

@@ -1,6 +1,6 @@
 'use client'; // Required because child components use client hooks
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useAnimate } from 'framer-motion';
 import Tilt from 'react-parallax-tilt'; // Import Tilt
@@ -33,6 +33,7 @@ export default function ProducersPage() {
   const { transitionState, nextRoute, startTransition, completeTransition } = usePageTransition();
   const [scope, animate] = useAnimate();
   const [animationComplete, setAnimationComplete] = useState(false);
+  const animatedRef = useRef(false); // Track if animation has run during this mount
 
   // Lifted state for carousel index
   const initialIndex = useMemo(() => Math.floor(sampleProducers.length / 2), []);
@@ -52,44 +53,46 @@ export default function ProducersPage() {
 
   // Handle entry animation on mount
   useEffect(() => {
+    // Reset animation state
+    animatedRef.current = false;
+    setAnimationComplete(false);
+    
     const runEntryAnimation = async () => {
-      // Start all elements invisible
+      // Skip if already animated during this mount
+      if (animatedRef.current) return;
+      animatedRef.current = true;
+      
+      // Ensure elements are hidden IMMEDIATELY on mount
       animate([
         [".cyberpunk-title", { opacity: 0, y: -100 }, { duration: 0 }],
         [".carousel-container", { opacity: 0, scale: 0.8 }, { duration: 0 }],
         [".back-button-container", { opacity: 0, x: -50 }, { duration: 0 }],
-        [".nav-arrow-container", { opacity: 0, y: 50 }, { duration: 0 }]
-      ]);
+        [".nav-arrow-container", { opacity: 0, y: 50 }, { duration: 0 }],
+        [".matrix-background", { opacity: 0 }, { duration: 0 }]
+      ], { immediate: true }); // Force immediate application
       
       // Short delay before starting animations
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Animate elements in sequence
-      await animate(".back-button-container", 
-        { opacity: 1, x: 0 }, 
-        { duration: 0.5, ease: "easeOut" }
-      );
-      
-      await animate(".cyberpunk-title", 
-        { opacity: 1, y: 0 }, 
-        { duration: 0.6, ease: "easeOut" }
-      );
-      
-      await animate(".carousel-container", 
-        { opacity: 1, scale: 1 }, 
-        { duration: 0.7, ease: "easeOut" }
-      );
-      
-      await animate(".nav-arrow-container", 
-        { opacity: 1, y: 0 }, 
-        { duration: 0.4, ease: "easeOut" }
-      );
+      // Animate all elements simultaneously with the same duration
+      await Promise.all([
+        animate(".cyberpunk-title", { opacity: 1, y: 0 }, { duration: 0.7, ease: "easeOut" }),
+        animate(".carousel-container", { opacity: 1, scale: 1 }, { duration: 0.7, ease: "easeOut" }),
+        animate(".nav-arrow-container", { opacity: 1, y: 0 }, { duration: 0.7, ease: "easeOut" }),
+        animate(".back-button-container", { opacity: 1, x: 0 }, { duration: 0.7, ease: "easeOut" }),
+        animate(".matrix-background", { opacity: 0.4 }, { duration: 0.7, ease: "easeOut" })
+      ]);
       
       setAnimationComplete(true);
     };
     
     runEntryAnimation();
-  }, [animate]);
+    
+    // Cleanup function to handle unmounting
+    return () => {
+      animatedRef.current = false;
+    };
+  }, [animate]); // Keep dependency on animate
 
   // Handle exit animation
   useEffect(() => {

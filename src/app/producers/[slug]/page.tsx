@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { motion, useAnimate } from 'framer-motion';
@@ -92,6 +92,7 @@ export default function ProducerDetailPage() {
   const params = useParams();
   const { transitionState, nextRoute, startTransition, completeTransition } = usePageTransition();
   const [scope, animate] = useAnimate();
+  const animatedRef = useRef(false); // Track if animation has run during this mount
   
   // Find the producer based on the slug
   const producer = producersData.find(p => p.slug === params.slug);
@@ -99,37 +100,51 @@ export default function ProducerDetailPage() {
   // Move useEffect hooks BEFORE the early return check
   // Handle entry animation
   useEffect(() => {
+    // Reset animation state
+    animatedRef.current = false;
+    
     const runEntryAnimation = async () => {
-      // Start elements hidden
-      animate([
-        [".producer-image", { opacity: 0, y: -100 }, { duration: 0 }],
-        [".bio-card", { opacity: 0, scale: 0.8 }, { duration: 0 }],
-        [".back-button-container", { opacity: 0, x: -50 }, { duration: 0 }]
-      ]);
-
-      await new Promise(resolve => setTimeout(resolve, 300)); // Small delay
-
-      // Animate in sequence
-      await animate(".back-button-container", { opacity: 1, x: 0 }, { duration: 0.5, ease: "easeOut" });
-      await animate(".producer-image", { opacity: 1, y: 0 }, { duration: 0.6, ease: "easeOut" });
-      await animate(".bio-card", { opacity: 1, scale: 1 }, { duration: 0.7, ease: "easeOut" });
+      // Skip if already animated during this mount
+      if (animatedRef.current) return;
+      animatedRef.current = true;
       
-      // Set animation complete after all animations
-      // setAnimationComplete(true); // Removed as it's unused
+      // Start elements hidden (Image, Bio, Back Button, AND Background)
+      animate([
+        [".producer-image-container", { opacity: 0, y: -100 }, { duration: 0 }], 
+        [".bio-card-container", { opacity: 0, scale: 0.8 }, { duration: 0 }], 
+        [".back-button-container", { opacity: 0, x: -50 }, { duration: 0 }],
+        [".background-container", { opacity: 0 }, { duration: 0 }] 
+      ], { immediate: true }); // Force immediate application
+
+      await new Promise(resolve => setTimeout(resolve, 300)); // Keep initial delay
+
+      // Animate ALL elements simultaneously with the SAME duration
+      await Promise.all([
+        animate(".background-container", { opacity: 1 }, { duration: 0.7, ease: "easeOut" }),
+        animate(".producer-image-container", { opacity: 1, y: 0 }, { duration: 0.7, ease: "easeOut" }),
+        animate(".bio-card-container", { opacity: 1, scale: 1 }, { duration: 0.7, ease: "easeOut" }),
+        animate(".back-button-container", { opacity: 1, x: 0 }, { duration: 0.7, ease: "easeOut" })
+      ]);
     };
 
     runEntryAnimation();
-  }, [animate]); // Depend only on animate
+    
+    // Cleanup function to handle unmounting
+    return () => {
+      animatedRef.current = false;
+    };
+  }, [animate, params.slug]); // Depend on animate AND slug for re-running on producer change
 
   // Handle exit animation
   useEffect(() => {
     const runExitAnimation = async () => {
       if (transitionState === 'exiting' && nextRoute && scope.current) {
+        // Corrected selectors
         await Promise.all([
-          animate(".producer-image", { opacity: 0, y: -50 }, { duration: 0.4, ease: 'easeIn' }),
-          animate(".bio-card", { opacity: 0, scale: 0.9 }, { duration: 0.5, ease: 'easeIn' }),
+          animate(".producer-image-container", { opacity: 0, y: -50 }, { duration: 0.4, ease: 'easeIn' }),
+          animate(".bio-card-container", { opacity: 0, scale: 0.9 }, { duration: 0.5, ease: 'easeIn' }),
           animate(".back-button-container", { opacity: 0, x: -30 }, { duration: 0.3, ease: 'easeIn' }),
-          animate(".matrix-background", { opacity: 0 }, { duration: 0.6, ease: 'easeIn' })
+          animate(".background-container", { opacity: 0 }, { duration: 0.6, ease: 'easeIn' }) // Corrected background selector
         ]);
         router.push(nextRoute);
         completeTransition();

@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransitionProvider } from "@/components/layout/PageTransitionContext";
 import { MusicPlayerProvider } from "@/context/MusicPlayerContext";
 import { GlobalMusicPlayer } from "@/components/layout/GlobalMusicPlayer";
+import { PageTransitionWrapper } from "@/components/layout/PageTransitionWrapper";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -37,7 +38,9 @@ export default function RootLayout({
         >
           <MusicPlayerProvider>
             <PageTransitionProvider>
-              {children}
+              <PageTransitionWrapper>
+                {children}
+              </PageTransitionWrapper>
             </PageTransitionProvider>
             <GlobalMusicPlayer />
           </MusicPlayerProvider>
