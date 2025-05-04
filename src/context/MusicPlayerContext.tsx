@@ -33,7 +33,7 @@ const MusicPlayerContext = createContext<MusicPlayerContextProps | undefined>(un
 const defaultTrack: Track = {
   title: "United", // Or a more descriptive title
   artist: "Crash Dummy",
-  url: "/songs/united.mp3"
+  url: "/songs_united.mp3"
 };
 
 // Define a type for window with potential webkitAudioContext
