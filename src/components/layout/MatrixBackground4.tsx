@@ -1,9 +1,17 @@
 'use client'; // Required for useEffect and useRef
 
 import React, { useRef, useEffect } from 'react';
+import { useMusicPlayer } from '@/context/MusicPlayerContext'; // Import the hook
 
 const MatrixBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Consume audioVolume
+  const { audioVolume } = useMusicPlayer(); 
+  
+  const volumeRef = useRef(audioVolume);
+  useEffect(() => {
+    volumeRef.current = audioVolume;
+  }, [audioVolume]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,8 +33,8 @@ const MatrixBackground: React.FC = () => {
       
       // 3D space configuration - HEAVILY REDUCED FOR PERFORMANCE
       const fov = 250; // Field of view
-      const depth = 10; // Drastically reduced depth (was 15)
-      const spacing = 90; // Much larger spacing (was 60)
+      const depth = 60; // Drastically reduced depth (was 15)
+      const spacing = 110; // Much larger spacing (was 60)
       
       // Create a true 3D grid of characters
       type Point3D = {
@@ -34,7 +42,8 @@ const MatrixBackground: React.FC = () => {
         y: number;      // 3D world y position
         z: number;      // 3D world z position (depth)
         char: string;   // The character to display
-        speed: number;  // How fast it falls
+        baseSpeed: number; // Store base speed
+        currentSpeed: number; // Store current speed for update
       };
       
       const points: Point3D[] = [];
@@ -64,12 +73,14 @@ const MatrixBackground: React.FC = () => {
             
             const charIdx = Math.floor(Math.random() * matrix.length);
             
+            const baseSpeed = 1 + (1 - z/depth) * 2; // Calculate base speed
             points.push({
               x: worldX,
               y: worldY,
-              z: z * 200,
+              z: z * 100,
               char: matrix[charIdx],
-              speed: 1 + (1 - z/depth) * 2 // Reduced speed variance
+              baseSpeed: baseSpeed,
+              currentSpeed: baseSpeed // Initialize current speed
             });
           }
         }
@@ -79,52 +90,63 @@ const MatrixBackground: React.FC = () => {
       points.sort((a, b) => b.z - a.z);
       
       // Performance optimization - log the drastically reduced point count
-      console.log(`Rendering ${points.length} matrix points (minimal version)`);
+      console.log(`Rendering ${points.length} matrix points (volume reactive v3)`);
       
       const draw = () => {
+        const currentVolume = volumeRef.current; 
+
         // Semi-transparent black for trails
-        ctx.fillStyle = "rgba(0, 0, 0, 0.08)"; // Slightly darker trails to compensate for fewer points
+        ctx.fillStyle = "rgba(0, 0, 0, 0.08)"; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         
-        // Draw each point in 3D space
         for (const point of points) {
           // Project 3D point to 2D screen space
           const scale = fov / (fov + point.z);
           const x2d = centerX + point.x * scale;
           const y2d = centerY + point.y * scale;
           
-          // Very aggressive culling - don't even process points far off screen
+          point.currentSpeed = point.baseSpeed; // Keep speed fixed
           if (x2d < -200 || x2d > canvas.width + 200 || y2d < -200 || y2d > canvas.height + 200) {
-            // Update position for next frame
-            point.y += point.speed;
-            // Reset when it falls too far
+            point.y += point.currentSpeed; 
             if (point.y > canvas.height * 1.5) {
               point.y = -canvas.height * 1.5;
             }
             continue;
           }
           
-          // Make characters slightly larger to compensate for fewer of them
-          const size = Math.max(9, Math.floor(fontSize * scale * 1.3));
+          // --- Modify visuals based on volume (MAXIMUM IMPACT) --- 
+          // Use a stronger curve for volume effect (e.g., power of 1.5)
+          const volumeEffect = Math.pow(currentVolume, 1.5) * 2.0; // Stronger curve + multiplier
           
-          // Color based on distance
+          // Size pulse: Characters grow significantly
+          const size = Math.max(9, Math.floor(fontSize * scale * (1))); // INCREASED size reaction
+          
           const distance01 = point.z / (depth * 200);
-          const greenValue = Math.floor(50 + 205 * (1-distance01));
-          const opacity = 0.4 + 0.6 * (1-distance01); // Slightly higher minimum opacity
+          
+          // Color Flash: Base dim green, flashes bright white/yellow
+          const baseGreen = 50 + 150 * (1 - distance01); // Dimmer base green overall
+          const flashBoost = 255 * volumeEffect; // Boost ALL channels towards white
+
+          const r = Math.min(255, Math.floor(flashBoost * 0.8)); // Red comes in strongly
+          const g = Math.min(255, Math.floor(baseGreen + flashBoost));
+          const b = Math.min(255, Math.floor(flashBoost * 0.7)); // Blue comes in too
+          
+          // Opacity Flash: Near full opacity on peaks
+          const baseOpacity = 0.1;
+          const dynamicOpacity = 2.0 * volumeEffect; // Strong opacity reaction
+          const opacity = Math.min(1, baseOpacity + dynamicOpacity);
+
+          // --- End Modifications --- 
           
           ctx.font = `${size}px monospace`;
-          ctx.fillStyle = `rgba(0, ${greenValue}, 0, ${opacity})`;
-          
-          // Draw the character
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
           ctx.fillText(point.char, x2d, y2d);
           
-          // Update position for next frame
-          point.y += point.speed;
+          point.y += point.currentSpeed; // Use fixed speed
           
-          // Reset when it falls out of view
           if (point.y > canvas.height * 1.5) {
             point.y = -canvas.height * 1.5;
           }

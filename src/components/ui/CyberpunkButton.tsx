@@ -1,25 +1,48 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
+import { usePageTransition } from '@/components/layout/PageTransitionContext';
 
 interface CyberpunkButtonProps {
   text: string;
   margin: string;
   index: number;
   href?: string;
+  onClick?: () => void;
+  width?: string;
+  height?: string;
 }
 
-export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, index, href }) => {
+export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, index, href, onClick, width, height }) => {
+  const router = useRouter();
+  const { startTransition } = usePageTransition();
+  
+  const effectiveOnClick = onClick ? onClick : () => {
+    if (href) {
+      startTransition(href);
+    }
+  };
+  
+  const baseStyle: React.CSSProperties = {
+    transformStyle: 'preserve-3d',
+    transform: 'translateZ(0)',
+    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    boxShadow: '0 5px 15px rgba(0,0,0,0.2), 0 0 5px rgba(57,255,20,0.2)',
+    cursor: 'pointer'
+  };
+  
+  if (width) {
+    baseStyle.width = width;
+  }
+  if (height) {
+    baseStyle.height = height;
+  }
+  
   return (
     <div
-      key={text} // Use text as key here
-      className={`sci-fi-button tracer-button-${index} group relative ${margin} w-full hover:z-depth-pop`}
-      style={{ 
-        transformStyle: 'preserve-3d',
-        transform: 'translateZ(0)',
-        transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        boxShadow: '0 5px 15px rgba(0,0,0,0.2), 0 0 5px rgba(57,255,20,0.2)',
-        cursor: 'pointer' // Keep cursor pointer for interaction indication
-      }}
-      onClick={() => href && (window.location.href = href)}
+      key={text}
+      className={`sci-fi-button tracer-button-${index} group relative ${margin} hover:z-depth-pop`}
+      style={baseStyle}
+      onClick={effectiveOnClick}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateZ(35px) scale(1.02)';
         e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.4), 0 0 15px rgba(57,255,20,0.5)';
@@ -29,7 +52,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
         e.currentTarget.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2), 0 0 5px rgba(57,255,20,0.2)';
       }}
     >
-      {/* Outer tracer container - add pointer-events-none */}
       <div className="absolute -inset-4 rounded-lg overflow-hidden z-0 pointer-events-none">
         <div className="absolute inset-0 bg-black/10 backdrop-blur-sm rounded-lg"></div>
         <div 
@@ -46,7 +68,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
             strokeDasharray="10,15"
           />
           
-          {/* Simple static path with class-based animations */}
           <path
             d="M0,25 Q50,18 100,25"
             className="tracer-line"
@@ -56,7 +77,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
             }}
           />
           
-          {/* Each button gets 4 lines with completely different paths */}
           {index === 0 && (
             <>
               <line x1="10%" y1="0" x2="20%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="3,10" className="tracer-line" style={{animationDelay: "-1.3s"}} />
@@ -93,7 +113,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
             </>
           )}
           
-          {/* Different tracer patterns for each button */}
           {index === 0 && (
             <path 
               className="tracer-line"
@@ -139,7 +158,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
             />
           )}
           
-          {/* Data points with completely independent animations */}
           {index === 0 && (
             <>
               <circle className="data-point" cx="10" cy="10" />
@@ -172,7 +190,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
             </>
           )}
           
-          {/* Add the flicker effect div */}
           <rect
             className="flicker"
             x="0" y="0"
@@ -181,29 +198,24 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
         </svg>
       </div>
       
-      {/* Glow effect behind button - only visible on hover */}
       <div className="absolute inset-0 opacity-0 blur-md bg-lime-500/30 transition-opacity duration-500 ease-in-out group-hover:opacity-100 rounded-md" />
       
-      {/* SVG Border - Futuristic Tech Border */}
       <svg 
         className="absolute inset-0 h-full w-full" 
         viewBox="0 0 380 70" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Main outer shape with cutouts */}
         <path 
           d="M380 14v42c0 7.732-6.268 14-14 14h-70l-8-8h-190l-8 8h-70c-7.732 0-14-6.268-14-14v-42c0-7.732 6.268-14 14-14h70l8 8h190l8-8h70c7.732 0 14 6.268 14 14z" 
           className="fill-black/50 transition-all duration-500 ease-in-out group-hover:fill-black/90 group-hover:shadow-[inset_0_0_20px_rgba(57,255,20,0.5)]"
         />
         
-        {/* Background fill that appears on hover */}
         <path 
           d="M380 14v42c0 7.732-6.268 14-14 14h-70l-8-8h-190l-8 8h-70c-7.732 0-14-6.268-14-14v-42c0-7.732 6.268-14 14-14h70l8 8h190l8-8h70c7.732 0 14 6.268 14 14z" 
           className="fill-lime-500/0 transition-all duration-500 ease-in-out group-hover:fill-lime-500/20"
         />
         
-        {/* Glowing border */}
         <path 
           d="M380 14v42c0 7.732-6.268 14-14 14h-70l-8-8h-190l-8 8h-70c-7.732 0-14-6.268-14-14v-42c0-7.732 6.268-14 14-14h70l8 8h190l8-8h70c7.732 0 14 6.268 14 14z" 
           className="border-glow fill-none stroke-lime-500/80 stroke-[2] transition-all duration-300 group-hover:stroke-lime-400"
@@ -220,7 +232,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           }}
         />
         
-        {/* Tracer effect path - larger than button for more dramatic effect */}
         <path 
           d="M385 10v50c0 8-6.268 15-14 15h-75l-10-10h-185l-10 10h-75c-8 0-15-7-15-15v-50c0-8 7-15 15-15h75l10 10h185l10-10h75c8 0 14 7 14 15z" 
           className="tracer-path"
@@ -236,7 +247,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           }}
         />
         
-        {/* Pulse glow around main button */}
         <rect 
           x="5" y="5" 
           width="370" height="60" 
@@ -244,13 +254,11 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           className="pulse-glow fill-none stroke-lime-500/10 stroke-[1]"
         />
         
-        {/* Corner accents */}
         <path 
           d="M14 0L0 14M366 0L380 14M14 70L0 56M366 70L380 56" 
           className="corner-glow stroke-lime-500/80 stroke-3 transition-all duration-300 group-hover:stroke-lime-400 group-hover:stroke-[4]"
         />
         
-        {/* Tech details - various small connecting lines - animate on hover */}
         <path 
           d={`M${60 + index*30} 0v10 M${320 - index*30} 0v10 M${60 + index*30} 70v-10 M${320 - index*30} 70v-10`}
           className="tech-detail stroke-lime-500/80 stroke-2 transition-all duration-300 group-hover:stroke-lime-400/90 group-hover:stroke-[3]"
@@ -258,7 +266,6 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           strokeDashoffset="0"
         />
         
-        {/* Circuit-like patterns - animate on hover */}
         <path 
           d={`M30 35h${35 + index*20} M350 35h-${35 + index*20}`}
           className="circuit-pattern stroke-lime-500/80 stroke-2 transition-all duration-300 group-hover:stroke-lime-400/90 group-hover:stroke-[3]"
@@ -266,19 +273,16 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
         />
       </svg>
       
-      {/* Button Content */}
-      <div className="relative flex h-16 w-full items-center justify-center bg-transparent text-center text-2xl font-semibold text-lime-500 transition-all duration-500 group-hover:text-lime-300 z-10">
-        <span className="text-glow relative mx-6 tracking-widest transition-all duration-500">
+      <div className="relative flex h-16 w-full items-center justify-center bg-transparent text-center text-2xl font-semibold text-lime-500 transition-all duration-500 group-hover:text-lime-300 z-10 px-12">
+        <span className="text-glow relative tracking-widest transition-all duration-500">
           {text}
         </span>
         
-        {/* Left bracket - more glow on hover */}
-        <span className="bracket-glow absolute left-20 text-3xl font-light opacity-70 transition-all duration-500 group-hover:opacity-100 group-hover:text-lime-300">
+        <span className="bracket-glow absolute left-8 text-3xl font-light opacity-70 transition-all duration-500 group-hover:opacity-100 group-hover:text-lime-300">
           &#10214;
         </span>
         
-        {/* Right bracket - more glow on hover */}
-        <span className="bracket-glow absolute right-20 text-3xl font-light opacity-70 transition-all duration-500 group-hover:opacity-100 group-hover:text-lime-300">
+        <span className="bracket-glow absolute right-8 text-3xl font-light opacity-70 transition-all duration-500 group-hover:opacity-100 group-hover:text-lime-300">
           &#10215;
         </span>
       </div>

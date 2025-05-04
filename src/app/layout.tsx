@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PageTransitionProvider } from "@/components/layout/PageTransitionContext";
+import { MusicPlayerProvider } from "@/context/MusicPlayerContext";
+import { GlobalMusicPlayer } from "@/components/layout/GlobalMusicPlayer";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -25,14 +28,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${montserrat.variable}`}>
+      <body className={`${inter.variable} ${montserrat.variable} bg-black text-neutral-100`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <MusicPlayerProvider>
+            <PageTransitionProvider>
+              {children}
+            </PageTransitionProvider>
+            <GlobalMusicPlayer />
+          </MusicPlayerProvider>
         </ThemeProvider>
       </body>
     </html>

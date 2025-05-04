@@ -104,7 +104,7 @@ const MatrixBackground: React.FC = () => {
           // Color based on distance
           const distance01 = point.z / (depth * 200); // 0-1 range (1 = farthest)
           const greenValue = Math.floor(50 + 205 * (1-distance01));
-          const opacity = 0.3 + 0.7 * (1-distance01);
+          const opacity = 0.15 + 0.35 * (0.1-distance01); // Reduced opacity values
           
           ctx.font = `${size}px monospace`;
           ctx.fillStyle = `rgba(0, ${greenValue}, 0, ${opacity})`;
