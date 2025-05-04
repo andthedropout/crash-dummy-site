@@ -1,5 +1,4 @@
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { usePageTransition } from '@/components/layout/PageTransitionContext';
 
 interface CyberpunkButtonProps {
@@ -13,7 +12,6 @@ interface CyberpunkButtonProps {
 }
 
 export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, index, href, onClick, width, height }) => {
-  const router = useRouter();
   const { startTransition } = usePageTransition();
   
   const effectiveOnClick = onClick ? onClick : () => {

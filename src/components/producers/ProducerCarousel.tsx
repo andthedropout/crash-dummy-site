@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion';
 import { ProducerCard } from './ProducerCard';
 // import { ChevronLeft, ChevronRight } from 'lucide-react'; // Remove lucide icons
-import { CyberpunkButton } from '@/components/ui/CyberpunkButton'; // Import CyberpunkButton
 
 interface Producer {
   imgurl: string;

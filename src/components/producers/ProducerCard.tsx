@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image'; // Use Next.js Image for optimization
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { usePageTransition } from '@/components/layout/PageTransitionContext';
 

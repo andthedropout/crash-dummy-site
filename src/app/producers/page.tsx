@@ -1,8 +1,8 @@
 'use client'; // Required because child components use client hooks
 
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, useAnimate, stagger } from 'framer-motion';
+import { motion, useAnimate } from 'framer-motion';
 import Tilt from 'react-parallax-tilt'; // Import Tilt
 import { MatrixBackground as MatrixBackground2 } from '@/components/layout/MatrixBackground2'; // Use named import and alias it
 import { ProducerCarousel } from '@/components/producers/ProducerCarousel'; // Import the carousel
@@ -48,17 +48,6 @@ export default function ProducersPage() {
 
   const handleBack = () => {
     startTransition('/'); // Trigger transition back to home
-  };
-
-  // Handle producer card selection
-  const handleProducerSelect = (link: string) => {
-    if (link.startsWith('http')) {
-      // For external links, open in new tab
-      window.open(link, '_blank');
-    } else {
-      // For internal links, use page transition
-      startTransition(link);
-    }
   };
 
   // Handle entry animation on mount

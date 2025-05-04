@@ -7,6 +7,7 @@ import { MatrixBackground } from "@/components/layout/MatrixBackground"; // Rest
 import { CyberpunkButtons } from "@/components/ui/CyberpunkButtons"; // Use named import
 import Tilt from 'react-parallax-tilt'; // Import the tilt component
 import { usePageTransition } from "@/components/layout/PageTransitionContext";
+import Image from "next/image"; // Import next/image
 
 // // import { Header } from "@/components/layout/header";
 // // import { Hero } from "@/components/layout/hero";
@@ -119,16 +120,19 @@ export default function Home() {
         {/* Left Column: GIF with ref and fade-in animation */}
         <motion.div 
           ref={gifRef}
-          className="flex w-2/3 items-center justify-center p-0 pointer-events-none"
+          className="relative flex w-2/3 items-center justify-center p-0 pointer-events-none" // Added relative positioning
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
         >
-          <img
-            // Maintained same styling but switched from video to image
-            className="w-full rounded-lg object-cover relative -top-8 shadow-lg [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_100%)] pointer-events-none"
+          {/* Use next/image with layout="fill" */}
+          <Image
+            className="rounded-lg object-cover relative -top-8 shadow-lg [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_100%)] pointer-events-none"
             src="/logo-matrix-unscreen.gif" 
             alt="Matrix Logo Animation"
+            layout="fill" // Fill the parent container
+            objectFit="cover" // Maintain aspect ratio, covering the area
+            unoptimized // Keep GIF as is
           />
         </motion.div>
 

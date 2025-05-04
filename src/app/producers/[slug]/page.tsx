@@ -1,14 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
-import { MatrixBackground as MatrixBackground3 } from '@/components/layout/MatrixBackground3'; // Use the actual MatrixBackground3 (aliased)
-import { CyberpunkButton } from '@/components/ui/CyberpunkButton'; // Import CyberpunkButton
-import { usePageTransition } from '@/components/layout/PageTransitionContext'; // Import usePageTransition
-import Tilt from 'react-parallax-tilt'; // Import Tilt
-import { motion, useAnimate, stagger } from 'framer-motion'; // Added stagger
+import { motion, useAnimate } from 'framer-motion';
+import { usePageTransition } from '@/components/layout/PageTransitionContext';
+import { CyberpunkButton } from '@/components/ui/CyberpunkButton';
+import { MatrixBackground as MatrixBackground3 } from '@/components/layout/MatrixBackground3';
 
 // TODO: Move producer data to a shared location or fetch it
 const producersData = [
@@ -90,88 +88,66 @@ His bucket list includes working with Beyoncé someday. More generally speaking,
 ];
 
 export default function ProducerDetailPage() {
+  const router = useRouter();
   const params = useParams();
-  const slug = params.slug as string;
-  const router = useRouter(); // Initialize router
-  const { transitionState, nextRoute, startTransition, completeTransition } = usePageTransition(); // Get transition state
-  const [scope, animate] = useAnimate(); // Initialize animate
-  const [animationComplete, setAnimationComplete] = useState(false); // Track animation completion
-
-  const producer = producersData.find(p => p.slug === slug);
-
-  if (!producer) {
-    // Handle producer not found, maybe redirect or show a 404
-    return <div>Producer not found</div>;
-  }
-
-  const handleBack = () => {
-    startTransition('/producers'); // Use page transition
-  };
-
+  const { transitionState, nextRoute, startTransition, completeTransition } = usePageTransition();
+  const [scope, animate] = useAnimate();
+  
+  // Find the producer based on the slug
+  const producer = producersData.find(p => p.slug === params.slug);
+  
+  // Move useEffect hooks BEFORE the early return check
   // Handle entry animation
   useEffect(() => {
     const runEntryAnimation = async () => {
-      // Start all elements invisible
+      // Start elements hidden
       animate([
-        [".background-container", { opacity: 0 }, { duration: 0 }],
-        [".back-button-container", { opacity: 0, x: -20 }, { duration: 0 }],
-        [".producer-image-container", { opacity: 0, y: 20 }, { duration: 0 }],
-        [".producer-title", { opacity: 0, y: 10 }, { duration: 0 }],
-        [".bio-card-container", { opacity: 0, y: 30 }, { duration: 0 }]
+        [".producer-image", { opacity: 0, y: -100 }, { duration: 0 }],
+        [".bio-card", { opacity: 0, scale: 0.8 }, { duration: 0 }],
+        [".back-button-container", { opacity: 0, x: -50 }, { duration: 0 }]
       ]);
-      
-      // Short delay before starting animations
-      await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Animate background first
-      await animate(".background-container", 
-        { opacity: 1 }, 
-        { duration: 0.8, ease: "easeOut" }
-      );
+      await new Promise(resolve => setTimeout(resolve, 300)); // Small delay
+
+      // Animate in sequence
+      await animate(".back-button-container", { opacity: 1, x: 0 }, { duration: 0.5, ease: "easeOut" });
+      await animate(".producer-image", { opacity: 1, y: 0 }, { duration: 0.6, ease: "easeOut" });
+      await animate(".bio-card", { opacity: 1, scale: 1 }, { duration: 0.7, ease: "easeOut" });
       
-      // Animate back button
-      await animate(".back-button-container", 
-        { opacity: 1, x: 0 }, 
-        { duration: 0.5, ease: "easeOut" }
-      );
-      
-      // Animate image container and title
-      await animate([
-        [".producer-image-container", { opacity: 1, y: 0 }, { duration: 0.6, ease: "easeOut" }],
-        [".producer-title", { opacity: 1, y: 0 }, { duration: 0.5, ease: "easeOut", delay: 0.1 }]
-      ]);
-      
-      // Animate bio card
-      await animate(".bio-card-container", 
-        { opacity: 1, y: 0 }, 
-        { duration: 0.6, ease: "easeOut" }
-      );
-      
-      setAnimationComplete(true);
+      // Set animation complete after all animations
+      // setAnimationComplete(true); // Removed as it's unused
     };
-    
+
     runEntryAnimation();
-  }, [animate]); // Only run on mount
+  }, [animate]); // Depend only on animate
 
   // Handle exit animation
   useEffect(() => {
     const runExitAnimation = async () => {
-      if (transitionState === 'exiting' && nextRoute) {
-        // Animate elements out in reverse order from entry
+      if (transitionState === 'exiting' && nextRoute && scope.current) {
         await Promise.all([
-          animate(".bio-card-container", { opacity: 0, y: 20 }, { duration: 0.3, ease: 'easeIn' }),
-          animate(".producer-image-container", { opacity: 0, y: -10, scale: 0.95 }, { duration: 0.4, ease: 'easeIn' }),
-          animate(".back-button-container", { opacity: 0, x: -20 }, { duration: 0.3, ease: 'easeIn' }),
-          animate(".background-container", { opacity: 0 }, { duration: 0.5, ease: 'easeIn' })
+          animate(".producer-image", { opacity: 0, y: -50 }, { duration: 0.4, ease: 'easeIn' }),
+          animate(".bio-card", { opacity: 0, scale: 0.9 }, { duration: 0.5, ease: 'easeIn' }),
+          animate(".back-button-container", { opacity: 0, x: -30 }, { duration: 0.3, ease: 'easeIn' }),
+          animate(".matrix-background", { opacity: 0 }, { duration: 0.6, ease: 'easeIn' })
         ]);
-
-        // Navigate after animations
         router.push(nextRoute);
         completeTransition();
       }
     };
     runExitAnimation();
-  }, [transitionState, nextRoute, animate, completeTransition, router]);
+  }, [transitionState, nextRoute, animate, completeTransition, router, scope]); // Added scope dependency
+
+  // Early return if producer not found
+  if (!producer) {
+    // Optional: Redirect to a 404 page or the producers list
+    // router.push('/404'); // Example redirect
+    return <div className="text-white text-center pt-20">Producer not found.</div>; 
+  }
+
+  const handleBack = () => {
+    startTransition('/producers');
+  };
 
   return (
     <motion.div 
