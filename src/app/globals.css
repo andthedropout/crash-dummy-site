@@ -55,19 +55,19 @@
 @keyframes outerGlow {
   0% {
     opacity: 0.1;
-    box-shadow: 0 0 5px 1px rgba(57, 255, 20, 0.2);
+    box-shadow: 0 0 5px 1px var(--button-secondary-color, rgba(57, 255, 20, 0.2));
   }
   30% {
     opacity: 0.3;
-    box-shadow: 0 0 12px 3px rgba(57, 255, 20, 0.3);
+    box-shadow: 0 0 12px 3px var(--button-secondary-color, rgba(57, 255, 20, 0.3));
   }
   70% {
     opacity: 0.4;
-    box-shadow: 0 0 15px 5px rgba(57, 255, 20, 0.4);
+    box-shadow: 0 0 15px 5px var(--button-secondary-color, rgba(57, 255, 20, 0.4));
   }
   100% {
     opacity: 0.1;
-    box-shadow: 0 0 5px 1px rgba(57, 255, 20, 0.2);
+    box-shadow: 0 0 5px 1px var(--button-secondary-color, rgba(57, 255, 20, 0.2));
   }
 }
 
@@ -191,50 +191,49 @@
 
 @keyframes pulse {
   0% {
-    filter: drop-shadow(0 0 2px #39FF14);
+    filter: drop-shadow(0 0 2px var(--page-secondary-color, #39FF14));
   }
   50% {
-    filter: drop-shadow(0 0 8px #39FF14);
+    filter: drop-shadow(0 0 8px var(--page-secondary-color, #39FF14));
   }
   100% {
-    filter: drop-shadow(0 0 2px #39FF14);
+    filter: drop-shadow(0 0 2px var(--page-secondary-color, #39FF14));
   }
 }
 
-/* Sci-Fi Button Styles */
+/* Sci-Fi Button Styles - Use CSS Variables */
 .sci-fi-button .border-glow {
-  filter: drop-shadow(0 0 2px #39FF14);
+  filter: drop-shadow(0 0 2px var(--button-secondary-color, #39FF14));
 }
 
-.sci-fi-button .border-glow:hover {
-  filter: drop-shadow(0 0 4px #39FF14);
+.sci-fi-button:hover .border-glow {
+  filter: drop-shadow(0 0 4px var(--button-secondary-color, #39FF14));
 }
 
 .sci-fi-button .corner-glow {
-  filter: drop-shadow(0 0 3px #39FF14);
+  /* Corner glow path itself uses secondary color variable for stroke */
 }
 
 .sci-fi-button .corner-glow:hover {
-  filter: drop-shadow(0 0 5px #39FF14);
+  /* Handled by inline style hover on the path element */
 }
 
 .sci-fi-button .tech-detail {
-  filter: drop-shadow(0 0 2px #39FF14);
+  /* Tech detail path itself uses secondary color variable for stroke */
 }
 
 .sci-fi-button .circuit-pattern {
-  filter: drop-shadow(0 0 2px #39FF14);
+  /* Circuit pattern path itself uses secondary color variable for stroke */
   animation: dashoffset 8s linear infinite;
 }
 
-/* New tracer class */
 .sci-fi-button .tracer-path {
-  stroke: #39FF14;
+  /* Tracer path uses primary color variable for stroke */
   stroke-width: 2px;
   fill: none;
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
-  filter: drop-shadow(0 0 5px #39FF14);
+  filter: drop-shadow(0 0 5px var(--button-primary-color, #39FF14)); /* Glow uses primary */
   opacity: 0;
   animation: tracer 6s linear infinite alternate;
 }
@@ -243,8 +242,7 @@
   animation: tracer 3s linear infinite alternate;
 }
 
-/* Enhanced scanline effects */
-.sci-fi-button::before {
+.sci-fi-button::before { /* Vertical Scanline */
   content: '';
   position: absolute;
   top: 0;
@@ -252,9 +250,9 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(to bottom, 
-    rgba(57, 255, 20, 0) 0%, 
-    rgba(57, 255, 20, 0.1) 50%, 
-    rgba(57, 255, 20, 0) 100%);
+    rgba(0,0,0,0) 0%, 
+    var(--button-secondary-color, rgba(57, 255, 20, 0.1)) 50%, /* Use secondary for scanline */
+    rgba(0,0,0,0) 100%);
   background-size: 100% 8px;
   z-index: 1;
   opacity: 0;
@@ -262,8 +260,7 @@
   transition: opacity 0.3s ease;
 }
 
-/* Horizontal scanline */
-.sci-fi-button::after {
+.sci-fi-button::after { /* Horizontal Scanline */
   content: '';
   position: absolute;
   top: 0;
@@ -271,9 +268,9 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(to right, 
-    rgba(57, 255, 20, 0) 0%, 
-    rgba(57, 255, 20, 0.07) 50%, 
-    rgba(57, 255, 20, 0) 100%);
+    rgba(0,0,0,0) 0%, 
+    var(--button-secondary-color, rgba(57, 255, 20, 0.07)) 50%, /* Use secondary for scanline */
+    rgba(0,0,0,0) 100%);
   background-size: 200% 100%;
   z-index: 1;
   opacity: 0;
@@ -291,26 +288,22 @@
   animation: scanline-horizontal 4s linear infinite;
 }
 
-/* Add flicker effect for technical look */
 .sci-fi-button .flicker {
   position: absolute;
   inset: 0;
-  background-color: rgba(57, 255, 20, 0.03);
-  opacity: 0;
+  /* Flicker rect fill uses primary color variable */
   z-index: 1;
   pointer-events: none;
 }
 
 .sci-fi-button:hover .flicker {
-  opacity: 1;
+  opacity: 1; /* Opacity controlled by animation */
   animation: flicker 8s step-end infinite;
 }
 
-/* COMPLETELY INDEPENDENT ANIMATIONS FOR EACH BUTTON */
-
-/* Button 0 */
+/* Button Specific Animations - Use Variables */
 .tracer-button-0 .tracer-line {
-  stroke: #39FF14;
+  /* stroke is set inline */
   stroke-width: 1px;
   fill: none;
   stroke-dasharray: 1000;
@@ -318,13 +311,13 @@
   animation: trace 11.3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   animation-delay: -2.3s;
   opacity: 0.3;
-  filter: drop-shadow(0 0 3px #39FF14);
+  filter: drop-shadow(0 0 3px var(--button-primary-color, #39FF14)); /* Glow uses primary */
 }
 
 .tracer-button-0 .data-point {
-  fill: #39FF14;
+  /* fill is set inline */
   r: 2;
-  filter: drop-shadow(0 0 2px #39FF14);
+  /* filter is set inline */
   opacity: 0;
   animation: dataPoint 3.7s ease-in-out infinite;
   animation-delay: -0.9s;
@@ -333,104 +326,49 @@
 .tracer-button-0 .outer-glow {
   animation: outerGlow 7.2s ease-in-out infinite;
   animation-delay: -3.1s;
+  /* Base box-shadow color set inline */
 }
 
-.tracer-button-0 .flicker {
-  animation-delay: 1.3s;
+@keyframes outerGlow { /* Update keyframe colors */
+  0% {
+    opacity: 0.1;
+    box-shadow: 0 0 5px 1px var(--button-secondary-color, rgba(57, 255, 20, 0.2));
+  }
+  30% {
+    opacity: 0.3;
+    box-shadow: 0 0 12px 3px var(--button-secondary-color, rgba(57, 255, 20, 0.3));
+  }
+  70% {
+    opacity: 0.4;
+    box-shadow: 0 0 15px 5px var(--button-secondary-color, rgba(57, 255, 20, 0.4));
+  }
+  100% {
+    opacity: 0.1;
+    box-shadow: 0 0 5px 1px var(--button-secondary-color, rgba(57, 255, 20, 0.2));
+  }
 }
 
-/* Button 1 */
+/* ... Apply var() to other .tracer-button-X styles similarly ... */
+/* Example for tracer-button-1 */
 .tracer-button-1 .tracer-line {
-  stroke: #39FF14;
-  stroke-width: 1px;
-  fill: none;
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: trace 13.7s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
-  animation-delay: -7.8s;
-  opacity: 0.3;
-  filter: drop-shadow(0 0 3px #39FF14);
+  stroke-width: 1px; fill: none; stroke-dasharray: 1000; stroke-dashoffset: 1000;
+  animation: trace 13.7s cubic-bezier(0.25, 0.1, 0.25, 1) infinite; animation-delay: -7.8s;
+  opacity: 0.3; filter: drop-shadow(0 0 3px var(--button-primary-color, #39FF14));
 }
-
 .tracer-button-1 .data-point {
-  fill: #39FF14;
-  r: 2;
-  filter: drop-shadow(0 0 2px #39FF14);
-  opacity: 0;
-  animation: dataPoint 5.3s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-  animation-delay: -2.7s;
+  r: 2; opacity: 0; animation: dataPoint 5.3s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; animation-delay: -2.7s;
 }
+.tracer-button-1 .outer-glow { animation: outerGlow 9.1s ease-in-out infinite; animation-delay: -4.5s; }
 
-.tracer-button-1 .outer-glow {
-  animation: outerGlow 9.1s ease-in-out infinite;
-  animation-delay: -4.5s;
-}
+/* ... (Repeat for tracer-button-2 and tracer-button-3) ... */
+.tracer-button-2 .tracer-line { stroke-width: 1px; fill: none; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: trace 17.1s ease-in-out infinite; animation-delay: -11.5s; opacity: 0.3; filter: drop-shadow(0 0 3px var(--button-primary-color, #39FF14)); }
+.tracer-button-2 .data-point { r: 2; opacity: 0; animation: dataPoint 4.1s cubic-bezier(0.25, 0.1, 0.25, 1) infinite; animation-delay: -1.5s; }
+.tracer-button-2 .outer-glow { animation: outerGlow 11.7s ease-in-out infinite; animation-delay: -8.3s; }
 
-.tracer-button-1 .flicker {
-  animation-delay: 0.5s;
-}
+.tracer-button-3 .tracer-line { stroke-width: 1px; fill: none; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: trace 19.3s cubic-bezier(0.76, 0, 0.24, 1) infinite; animation-delay: -15.7s; opacity: 0.3; filter: drop-shadow(0 0 3px var(--button-primary-color, #39FF14)); }
+.tracer-button-3 .data-point { r: 2; opacity: 0; animation: dataPoint 6.2s ease-in-out infinite; animation-delay: -4.3s; }
+.tracer-button-3 .outer-glow { animation: outerGlow 13.3s ease-in-out infinite; animation-delay: -10.8s; }
 
-/* Button 2 */
-.tracer-button-2 .tracer-line {
-  stroke: #39FF14;
-  stroke-width: 1px;
-  fill: none;
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: trace 17.1s ease-in-out infinite;
-  animation-delay: -11.5s;
-  opacity: 0.3;
-  filter: drop-shadow(0 0 3px #39FF14);
-}
-
-.tracer-button-2 .data-point {
-  fill: #39FF14;
-  r: 2;
-  filter: drop-shadow(0 0 2px #39FF14);
-  opacity: 0;
-  animation: dataPoint 4.1s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
-  animation-delay: -1.5s;
-}
-
-.tracer-button-2 .outer-glow {
-  animation: outerGlow 11.7s ease-in-out infinite;
-  animation-delay: -8.3s;
-}
-
-.tracer-button-2 .flicker {
-  animation-delay: 3.1s;
-}
-
-/* Button 3 */
-.tracer-button-3 .tracer-line {
-  stroke: #39FF14;
-  stroke-width: 1px;
-  fill: none;
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: trace 19.3s cubic-bezier(0.76, 0, 0.24, 1) infinite;
-  animation-delay: -15.7s;
-  opacity: 0.3;
-  filter: drop-shadow(0 0 3px #39FF14);
-}
-
-.tracer-button-3 .data-point {
-  fill: #39FF14;
-  r: 2;
-  filter: drop-shadow(0 0 2px #39FF14);
-  opacity: 0;
-  animation: dataPoint 6.2s ease-in-out infinite;
-  animation-delay: -4.3s;
-}
-
-.tracer-button-3 .outer-glow {
-  animation: outerGlow 13.3s ease-in-out infinite;
-  animation-delay: -10.8s;
-}
-
-.tracer-button-3 .flicker {
-  animation-delay: 2.3s;
-}
 
 /* Hover effects for all buttons */
 .sci-fi-button:hover .tracer-line {
@@ -446,23 +384,23 @@
   animation-duration: 4s !important;
 }
 
-.sci-fi-button .text-glow {
+.sci-fi-button .text-glow { /* Text glow uses secondary */
   text-shadow: 0 0 0 transparent;
 }
 
 .sci-fi-button:hover .text-glow {
-  text-shadow: 0 0 10px rgba(57, 255, 20, 0.7), 
-               0 0 20px rgba(57, 255, 20, 0.5), 
-               0 0 30px rgba(57, 255, 20, 0.3);
+  text-shadow: 0 0 10px var(--button-secondary-color, rgba(57, 255, 20, 0.7)), 
+               0 0 20px var(--button-secondary-color, rgba(57, 255, 20, 0.5)), 
+               0 0 30px var(--button-secondary-color, rgba(57, 255, 20, 0.3));
 }
 
-.sci-fi-button .bracket-glow {
+.sci-fi-button .bracket-glow { /* Bracket glow uses secondary */
   text-shadow: 0 0 0 transparent;
 }
 
 .sci-fi-button:hover .bracket-glow {
-  text-shadow: 0 0 10px rgba(57, 255, 20, 0.7), 
-               0 0 20px rgba(57, 255, 20, 0.5);
+  text-shadow: 0 0 10px var(--button-secondary-color, rgba(57, 255, 20, 0.7)), 
+               0 0 20px var(--button-secondary-color, rgba(57, 255, 20, 0.5));
 }
 
 :root {
@@ -552,12 +490,13 @@ body {
   }
 }
 
-/* Cyberpunk Title Styling */
+/* Cyberpunk Title Styles */
 .cyberpunk-title {
-  padding: 1rem 2rem;
-  display: inline-block;
   position: relative;
-  margin: 0 auto;
+  display: inline-block;
+  font-family: 'var(--font-montserrat)', monospace;
+  color: #39FF14; /* Fallback color */
+  text-shadow: 0 0 5px #39FF14, 0 0 10px #39FF14;
 }
 
 .glitch-container {
@@ -565,15 +504,10 @@ body {
 }
 
 .glitch-text {
-  color: white;
-  text-shadow: 
-    0 0 5px rgba(57, 255, 20, 0.7),
-    0 0 10px rgba(57, 255, 20, 0.5),
-    0 0 15px rgba(57, 255, 20, 0.3);
   position: relative;
-  letter-spacing: 2px;
-  font-family: monospace, sans-serif;
-  text-transform: uppercase;
+  z-index: 1;
+  user-select: none;
+  /* Text color is applied via inline style now */
 }
 
 .glitch-text::before,
@@ -584,133 +518,175 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  /* Apply primary color from variable */
+  color: var(--page-primary-color, #39FF14); 
+  background: var(--page-background-color, black); /* Use background color variable */
+  opacity: 0.8;
 }
 
 .glitch-text::before {
   left: 2px;
-  text-shadow: -1px 0 #90ff70;
-  animation: glitch-animation 3s infinite linear alternate-reverse;
-  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
-  opacity: 0.8;
+  text-shadow: -1px 0 red;
+  animation: glitch-animation 2s infinite linear alternate-reverse;
 }
 
 .glitch-text::after {
   left: -2px;
-  text-shadow: 2px 0 #39FF14;
-  animation: glitch-animation 2s infinite linear alternate-reverse;
-  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
-  opacity: 0.8;
+  text-shadow: 1px 0 blue;
+  animation: glitch-animation 3s infinite linear alternate-reverse;
 }
 
 @keyframes glitch-animation {
-  0% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(-1px, 1px);
-  }
-  40% {
-    transform: translate(-1px, -1px);
-  }
-  60% {
-    transform: translate(1px, 1px);
-  }
-  80% {
-    transform: translate(1px, -1px);
-  }
-  100% {
-    transform: translate(0);
-  }
+  0% { clip-path: inset(5% 0 85% 0); }
+  5% { clip-path: inset(40% 0 40% 0); }
+  10% { clip-path: inset(80% 0 5% 0); }
+  15% { clip-path: inset(25% 0 70% 0); }
+  20% { clip-path: inset(60% 0 30% 0); }
+  25% { clip-path: inset(10% 0 80% 0); }
+  30% { clip-path: inset(95% 0 1% 0); }
+  35% { clip-path: inset(50% 0 45% 0); }
+  40% { clip-path: inset(5% 0 90% 0); }
+  45% { clip-path: inset(70% 0 15% 0); }
+  50% { clip-path: inset(40% 0 50% 0); }
+  55% { clip-path: inset(90% 0 5% 0); }
+  60% { clip-path: inset(15% 0 75% 0); }
+  65% { clip-path: inset(55% 0 35% 0); }
+  70% { clip-path: inset(0% 0 95% 0); }
+  75% { clip-path: inset(85% 0 10% 0); }
+  80% { clip-path: inset(45% 0 45% 0); }
+  85% { clip-path: inset(20% 0 70% 0); }
+  90% { clip-path: inset(75% 0 5% 0); }
+  95% { clip-path: inset(30% 0 60% 0); }
+  100% { clip-path: inset(90% 0 2% 0); }
 }
 
 .title-decoration {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
 .scan-line {
   position: absolute;
-  width: 100%;
-  height: 2px;
-  background-color: rgba(57, 255, 20, 0.3);
-  top: 50%;
+  top: 0;
   left: 0;
+  width: 100%;
+  height: 4px;
+  /* Use primary color variable */
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, var(--page-primary-color, #39FF14) 50%, rgba(0,0,0,0) 100%);
+  opacity: 0.4;
   animation: scan 4s linear infinite;
 }
 
 @keyframes scan {
-  0% {
-    top: 0%;
-  }
-  100% {
-    top: 100%;
-  }
+  0% { top: -10%; }
+  50% { top: 100%; }
+  100% { top: -10%; }
 }
 
 .corner-decoration {
   position: absolute;
   width: 20px;
   height: 20px;
-  border: 2px solid #00ff00;
+  border-style: solid;
+  /* Use primary color variable */
+  border-color: var(--page-primary-color, #39FF14);
+  opacity: 0.7;
 }
 
 .top-left {
-  top: 0;
-  left: 0;
-  border-right: none;
-  border-bottom: none;
+  top: -5px;
+  left: -5px;
+  border-width: 2px 0 0 2px;
 }
 
 .top-right {
-  top: 0;
-  right: 0;
-  border-left: none;
-  border-bottom: none;
+  top: -5px;
+  right: -5px;
+  border-width: 2px 2px 0 0;
 }
 
 .bottom-left {
-  bottom: 0;
-  left: 0;
-  border-right: none;
-  border-top: none;
+  bottom: -5px;
+  left: -5px;
+  border-width: 0 0 2px 2px;
 }
 
 .bottom-right {
-  bottom: 0;
-  right: 0;
-  border-left: none;
-  border-top: none;
+  bottom: -5px;
+  right: -5px;
+  border-width: 0 2px 2px 0;
 }
 
 .title-data-text {
   position: absolute;
-  bottom: -12px;
-  right: 15px;
-  font-size: 0.7rem;
-  color: #00ff00;
-  font-family: monospace;
-  opacity: 0.8;
+  bottom: -1.5rem; /* Adjusted position below the main title */
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem; /* 12px */
+  /* color: #00ff00; */ /* Removed default green color */
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* Scoped styles using the class added in SettingsPage.tsx */
+.uses-page-colors .cyberpunk-title {
+  color: var(--page-primary-color, #39FF14); 
+  /* Use secondary color variable for glow */
+  text-shadow: 0 0 5px var(--page-secondary-color, #00FFFF), 0 0 10px var(--page-secondary-color, #00FFFF); 
+}
+
+.uses-page-colors .glitch-text::before,
+.uses-page-colors .glitch-text::after {
+  color: var(--page-primary-color, #39FF14); 
+  background: var(--page-background-color, black);
+  /* Explicitly override text-shadow for pseudo-elements */
+  text-shadow: 
+    -1px 0 var(--page-secondary-color, red), /* Example offset, adjust as needed */
+    1px 0 var(--page-secondary-color, blue); /* Example offset, adjust as needed */
+}
+
+/* Ensure specific pseudo-element shadows are overridden */
+.uses-page-colors .glitch-text::before {
+   text-shadow: -1px 0 var(--page-secondary-color, red); /* Secondary for glitch shadow */
+}
+
+.uses-page-colors .glitch-text::after {
+   text-shadow: 1px 0 var(--page-secondary-color, blue); /* Secondary for glitch shadow */
+}
+
+.uses-page-colors .scan-line {
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, var(--page-primary-color, #39FF14) 50%, rgba(0,0,0,0) 100%);
+}
+
+.uses-page-colors .corner-decoration {
+  border-color: var(--page-primary-color, #39FF14);
 }
 
 /* Cyber Square Button Styling */
 .cyber-square-button {
   transform-style: preserve-3d;
   transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.3), 0 0 10px rgba(57, 255, 20, 0.2);
+  /* Use secondary color variable for box-shadow */
+  box-shadow: 0 0 0 1px var(--csb-secondary, rgba(90, 238, 144, 0.3)), 0 0 10px var(--csb-secondary, rgba(90, 238, 144, 0.2));
 }
 
 .cyber-square-button:hover {
   transform: translateZ(5px) scale(1.05);
-  box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.6), 0 0 15px 2px rgba(57, 255, 20, 0.4);
+  /* Use secondary color variable for box-shadow */
+  box-shadow: 0 0 0 1px var(--csb-secondary, rgba(90, 238, 144, 0.6)), 0 0 15px 2px var(--csb-secondary, rgba(90, 238, 144, 0.4));
 }
 
 .cyber-square-button:active {
   transform: translateZ(2px) scale(0.98);
-  box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.7), 0 0 5px rgba(57, 255, 20, 0.5);
+  /* Use secondary color variable for box-shadow */
+  box-shadow: 0 0 0 1px var(--csb-secondary, rgba(90, 238, 144, 0.7)), 0 0 5px var(--csb-secondary, rgba(90, 238, 144, 0.5));
 }
 
 .glitch-square-text {
@@ -762,7 +738,8 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  border: 1px dashed rgba(57, 255, 20, 0.3);
+  /* Use secondary color variable for dashed border */
+  border: 1px dashed var(--csb-secondary, rgba(90, 238, 144, 0.3));
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   z-index: 25;
@@ -788,7 +765,8 @@ body {
 
 /* Producer Card Cyberpunk Styling */
 .producer-card-selected {
-  box-shadow: 0 0 15px 1px rgba(57, 255, 20, 0.3);
+  /* Use secondary color for main shadow */
+  box-shadow: 0 0 15px 1px var(--page-secondary-color, rgba(57, 255, 20, 0.3)); 
   position: relative;
   transform-style: preserve-3d;
 }
@@ -797,78 +775,72 @@ body {
   content: '';
   position: absolute;
   inset: -1px;
-  border: 1px solid rgba(57, 255, 20, 0.5);
+  /* Use secondary color for pulsing border */
+  border: 1px solid var(--page-secondary-color, rgba(57, 255, 20, 0.5)); 
   z-index: 10;
   pointer-events: none;
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* Card scan line */
+/* Update pulse keyframe to use secondary color */
+@keyframes pulse {
+  0% {
+    filter: drop-shadow(0 0 2px var(--page-secondary-color, #39FF14));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px var(--page-secondary-color, #39FF14));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px var(--page-secondary-color, #39FF14));
+  }
+}
+
+/* Card scan line - Use secondary color */
 .card-scan-line {
   position: absolute;
   width: 100%;
   height: 2px;
-  background-color: rgba(57, 255, 20, 0.4);
+  background-color: var(--page-secondary-color, rgba(57, 255, 20, 0.4)); 
   top: 0;
   left: 0;
   animation: card-scan 2s linear infinite;
-  box-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+  box-shadow: 0 0 5px var(--page-secondary-color, rgba(57, 255, 20, 0.5)); 
 }
 
-@keyframes card-scan {
-  0% {
-    top: 0;
-  }
-  100% {
-    top: 100%;
-  }
-}
-
-/* Technical data text */
+/* Technical data text (already using variables potentially) */
 .tech-data {
   opacity: 0.8;
   animation: flicker-square 3s step-end infinite;
 }
 
-/* Producer Title Styling */
-.producer-title-container.selected {
-  margin-top: 0.5rem;
-  min-height: 3rem;
-}
-
+/* Producer Title Styling - Use primary for text, secondary for shadow */
 .producer-title-glitch {
-  color: #39FF14;
+  color: var(--page-primary-color, #39FF14);
   font-size: 1.125rem;
   font-weight: 600;
-  text-shadow: 0 0 5px rgba(57, 255, 20, 0.7);
+  text-shadow: 0 0 5px var(--page-secondary-color, rgba(57, 255, 20, 0.7));
   position: relative;
   letter-spacing: 1px;
   font-family: monospace, sans-serif;
 }
 
-/* Desktop styling for producer title */
+/* Desktop styling for producer title - Use primary/secondary */
 @media (min-width: 768px) {
   .producer-title-glitch-desktop {
     font-size: 1.35rem;
     letter-spacing: 1.5px;
-    text-shadow: 0 0 7px rgba(57, 255, 20, 0.8);
+    text-shadow: 0 0 7px var(--page-secondary-color, rgba(57, 255, 20, 0.8));
   }
-  
-  .producer-title-container.selected {
-    min-height: 3.5rem;
-  }
+  /* ... (min-height styles) ... */
 }
 
 @media (min-width: 1024px) {
   .producer-title-glitch-desktop {
     font-size: 1.5rem;
     letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(57, 255, 20, 0.9);
+    text-shadow: 0 0 10px var(--page-secondary-color, rgba(57, 255, 20, 0.9));
   }
-  
-  .producer-title-container.selected {
-    min-height: 4rem;
-  }
+  /* ... (min-height styles) ... */
 }
 
 .producer-title-glitch::before,
@@ -881,34 +853,39 @@ body {
   height: 100%;
 }
 
+/* Use secondary for glitch shadow */
 .producer-title-glitch::before {
   left: 1px;
-  text-shadow: -0.5px 0 #90ff70;
+  text-shadow: -0.5px 0 var(--page-secondary-color, #90ff70);
   animation: glitch-animation 2s infinite linear alternate-reverse;
   clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
   opacity: 0.8;
 }
 
+/* Use primary for glitch shadow */
 .producer-title-glitch::after {
   left: -1px;
-  text-shadow: 1px 0 #39FF14;
+  text-shadow: 1px 0 var(--page-primary-color, #39FF14);
   animation: glitch-animation 1.5s infinite linear alternate-reverse;
   clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
   opacity: 0.8;
 }
 
-/* Producer Card Hover Effects */
+/* Producer Card Hover Effects - Use secondary color */
 .producer-card-hover {
-  box-shadow: 0 0 25px 5px rgba(57, 255, 20, 0.5) !important;
+  box-shadow: 0 0 25px 5px var(--page-secondary-color, rgba(57, 255, 20, 0.5)) !important;
   transition: all 0.3s ease-in-out;
 }
 
+/* Use secondary color */
 .animate-pulse-fast {
   animation: pulse-border 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Use secondary color */
 @keyframes pulse-border {
   0%, 100% {
+    /* Assuming border color set elsewhere, just animate opacity */
     opacity: 0.8;
   }
   50% {
@@ -916,128 +893,116 @@ body {
   }
 }
 
+/* Use secondary color */
 .animate-glow-pulse {
   animation: glow-pulse 2s ease-in-out infinite;
 }
 
+/* Use secondary color */
 @keyframes glow-pulse {
   0% {
-    background-color: rgba(57, 255, 20, 0.05);
+    background-color: var(--page-secondary-color, rgba(57, 255, 20, 0.05));
   }
   50% {
-    background-color: rgba(57, 255, 20, 0.2);
+    background-color: var(--page-secondary-color, rgba(57, 255, 20, 0.2));
   }
   100% {
-    background-color: rgba(57, 255, 20, 0.05);
+    background-color: var(--page-secondary-color, rgba(57, 255, 20, 0.05));
   }
 }
 
+/* Use secondary color */
 .glitch-overlay {
   background-image: repeating-linear-gradient(
     0deg,
-    rgba(57, 255, 20, 0.1),
-    rgba(57, 255, 20, 0.1) 1px,
+    var(--page-secondary-color, rgba(57, 255, 20, 0.1)),
+    var(--page-secondary-color, rgba(57, 255, 20, 0.1)) 1px,
     transparent 1px,
     transparent 2px
   );
   animation: glitch-scan 2s linear infinite;
 }
 
-@keyframes glitch-scan {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 0 100%;
-  }
-}
-
+/* Target Reticle - Use primary? */
 .target-reticle div {
+  /* Assuming border is primary */
   animation: target-pulse 2s ease-in-out infinite;
 }
 
-@keyframes target-pulse {
-  0%, 100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
+/* Tech Data Flash - Use primary? */
 .tech-data-flash {
+  /* Assuming text color is primary */
   animation: flash 0.8s step-end infinite;
 }
 
-@keyframes flash {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
-}
-
+/* Action Prompt - Use secondary? */
 .action-prompt {
   animation: action-prompt 1.5s ease-in-out infinite;
-  box-shadow: 0 0 10px 1px rgba(57, 255, 20, 0.3);
+  box-shadow: 0 0 10px 1px var(--page-secondary-color, rgba(57, 255, 20, 0.3));
 }
 
-@keyframes action-prompt {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-.particle-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translateY(-10px) rotate(180deg);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(0) rotate(360deg);
-    opacity: 0.3;
-  }
-}
-
+/* Title Hover - Use secondary */
 .title-hover {
   animation: title-glow 2s ease-in-out infinite;
 }
 
+/* Use secondary */
 @keyframes title-glow {
   0%, 100% {
-    text-shadow: 0 0 5px rgba(57, 255, 20, 0.7),
-                 0 0 10px rgba(57, 255, 20, 0.5),
-                 0 0 15px rgba(57, 255, 20, 0.3);
+    text-shadow: 0 0 5px var(--page-secondary-color, rgba(57, 255, 20, 0.7)),
+                 0 0 10px var(--page-secondary-color, rgba(57, 255, 20, 0.5)),
+                 0 0 15px var(--page-secondary-color, rgba(57, 255, 20, 0.3));
   }
   50% {
-    text-shadow: 0 0 10px rgba(57, 255, 20, 0.9),
-                 0 0 20px rgba(57, 255, 20, 0.7),
-                 0 0 30px rgba(57, 255, 20, 0.5);
+    text-shadow: 0 0 10px var(--page-secondary-color, rgba(57, 255, 20, 0.9)),
+                 0 0 20px var(--page-secondary-color, rgba(57, 255, 20, 0.7)),
+                 0 0 30px var(--page-secondary-color, rgba(57, 255, 20, 0.5));
   }
 }
 
+/* Status Ready - Use primary */
 .status-ready {
-  color: rgba(57, 255, 20, 1) !important;
+  color: var(--page-primary-color, rgba(57, 255, 20, 1));
   animation: status-blink 0.8s step-end infinite;
 }
 
-@keyframes status-blink {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+/* Decorations within the title */
+.title-decoration {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.title-data-text {
+  position: absolute;
+  bottom: -1.5rem; /* Adjusted position below the main title */
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem; /* 12px */
+  /* color: #00ff00; */ /* Removed default green color */
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* Apply theme colors when uses-page-colors is active */
+.uses-page-colors .cyberpunk-title h1 {
+  color: var(--page-primary-color);
+  text-shadow: 0 0 5px var(--page-secondary-color), 0 0 10px var(--page-secondary-color);
+}
+
+.uses-page-colors .cyberpunk-title .corner-decoration::before,
+.uses-page-colors .cyberpunk-title .corner-decoration::after,
+.uses-page-colors .cyberpunk-title .scan-line {
+  background-color: var(--page-primary-color);
+  box-shadow: 0 0 5px var(--page-secondary-color);
+}
+
+.uses-page-colors .cyberpunk-title .title-data-text {
+  color: var(--page-primary-color); /* Use primary color from variable */
+}
+
+.corner-decoration {
+  /* ... existing code ... */
 }

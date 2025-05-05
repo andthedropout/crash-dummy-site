@@ -1,9 +1,31 @@
 'use client'; // Required for useEffect and useRef
 
 import React, { useRef, useEffect } from 'react';
+import { useSettings } from '@/context/SettingsContext'; // Import useSettings
+
+// Helper function defined locally
+const hexToRgba = (hex: string, alpha: number): string => {
+  let cleanHex = hex.startsWith('#') ? hex.slice(1) : hex;
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map(char => char + char).join('');
+  }
+  if (cleanHex.length !== 6) {
+    console.error("Invalid hex color for rgba conversion:", hex);
+    return `rgba(0, 0, 0, ${alpha})`; 
+  }
+  const r = parseInt(cleanHex.slice(0, 2), 16);
+  const g = parseInt(cleanHex.slice(2, 4), 16);
+  const b = parseInt(cleanHex.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+     console.error("Failed to parse hex color:", hex);
+     return `rgba(0, 0, 0, ${alpha})`;
+  }
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 const MatrixBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { settings } = useSettings(); // Get settings
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,7 +40,7 @@ const MatrixBackground: React.FC = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      const phrase = "ᶜʳᵃˢʰ ᵗʰᵉ ʷᵒʳˡᵈ";
+      const phrase = "  ᶜʳᵃˢʰ ᵗʰᵉ ʷᵒʳˡᵈ";
       const matrix = phrase.split("");
       const fontSize = 18;
       
@@ -74,8 +96,8 @@ const MatrixBackground: React.FC = () => {
       points.sort((a, b) => b.z - a.z);
       
       const draw = () => {
-        // Semi-transparent black for trails
-        ctx.fillStyle = "rgba(0, 0, 0, 0.07)";
+        // Use theme background for trails
+        ctx.fillStyle = hexToRgba(settings.colors.background, 0.07);
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         const centerX = canvas.width / 2;
@@ -101,13 +123,12 @@ const MatrixBackground: React.FC = () => {
           // Size based on distance
           const size = Math.max(8, Math.floor(fontSize * scale));
           
-          // Color based on distance
-          const distance01 = point.z / (depth * 200); // 0-1 range (1 = farthest)
-          const greenValue = Math.floor(50 + 205 * (1-distance01));
-          const opacity = 0.15 + 0.35 * (0.1-distance01); // Reduced opacity values
+          // Color and opacity based on distance using theme primary color
+          const distance01 = point.z / (depth * 200);
+          const opacity = 0.15 + 0.35 * (1-distance01); 
           
           ctx.font = `${size}px monospace`;
-          ctx.fillStyle = `rgba(0, ${greenValue}, 0, ${opacity})`;
+          ctx.fillStyle = hexToRgba(settings.colors.primary, opacity);
           
           // Draw the character
           ctx.fillText(point.char, x2d, y2d);
@@ -139,7 +160,7 @@ const MatrixBackground: React.FC = () => {
       window.removeEventListener('resize', handleResize);
       if (intervalId) clearInterval(intervalId);
     };
-  }, []);
+  }, [settings]); // Add settings dependency
   
   return (
     <canvas
@@ -152,7 +173,7 @@ const MatrixBackground: React.FC = () => {
         width: '100vw',
         height: '100vh',
         zIndex: -1,
-        background: 'black',
+        background: settings.colors.background, // Use theme background
       }}
     />
   );

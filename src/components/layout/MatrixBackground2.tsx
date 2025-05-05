@@ -1,9 +1,32 @@
 'use client'; // Required for useEffect and useRef
 
 import React, { useRef, useEffect } from 'react';
+import { useSettings } from '@/context/SettingsContext'; // Import useSettings
+
+// Helper function defined locally
+const hexToRgba = (hex: string, alpha: number): string => {
+  let cleanHex = hex.startsWith('#') ? hex.slice(1) : hex;
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map(char => char + char).join('');
+  }
+  if (cleanHex.length !== 6) {
+    console.error("Invalid hex color for rgba conversion:", hex);
+    // Return a default fallback color (e.g., transparent black) or throw error
+    return `rgba(0, 0, 0, ${alpha})`; 
+  }
+  const r = parseInt(cleanHex.slice(0, 2), 16);
+  const g = parseInt(cleanHex.slice(2, 4), 16);
+  const b = parseInt(cleanHex.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+     console.error("Failed to parse hex color:", hex);
+     return `rgba(0, 0, 0, ${alpha})`;
+  }
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 const MatrixBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { settings } = useSettings(); // Get settings
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,7 +41,7 @@ const MatrixBackground: React.FC = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      const matrix = "ᶜʳᵃˢʰ ᵗʰᵉ ʷᵒʳˡᵈ".split("");
+      const matrix = "  ᶜʳᵃˢʰ ᵗʰᵉ ʷᵒʳˡᵈ".split(""); // Keep leading spaces
       const baseFontSize = 18; // Base font size
       
       // Define depth layers (z-axis) - higher number = farther away
@@ -42,7 +65,6 @@ const MatrixBackground: React.FC = () => {
         // Calculate distance from center as percentage (0 = center, 1 = edge)
         const distFromCenter = Math.abs(x - centerX) / centerX;
         // Invert to get z-depth (0 = closest/edges, 1 = farthest/center)
-        // Increased power to make the center effect more pronounced
         const zDepth = 1 - Math.pow(distFromCenter, 0.5); // More pronounced tunnel effect
         
         columns.push({
@@ -71,8 +93,8 @@ const MatrixBackground: React.FC = () => {
       window.addEventListener('mousemove', handleMouseMove);
 
       const draw = () => {
-        // Semi-transparent black for trailing effect
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        // Use theme background color for trailing effect
+        ctx.fillStyle = hexToRgba(settings.colors.background, 0.05); // Low opacity background fill
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // Draw each column with z-based properties
@@ -96,12 +118,16 @@ const MatrixBackground: React.FC = () => {
           const safeIndex = (charIndex + matrix.length) % matrix.length;
           const text = matrix[safeIndex];
           
-          // Set opacity and color based on depth
-          // Center columns (higher z) get more blue tint and are less opaque
-          const opacity = 0.2 + 0.8 * (1 - column.z * 0.9); // Even more opacity contrast
-          const greenValue = Math.floor(40 + 215 * (1 - column.z * 0.9)); // Higher contrast green
-          const blueValue = Math.floor(10 + 90 * column.z); // More blue in distant columns
-          ctx.fillStyle = `rgba(0, ${greenValue}, ${blueValue}, ${opacity})`;
+          // Set opacity and color based on depth using theme colors
+          const opacity = 0.2 + 0.8 * (1 - column.z * 0.9); // Opacity based on depth
+          
+          // Blend primary and secondary colors based on depth (more secondary further away)
+          // This requires converting hex to RGB. We use the imported hexToRgba for fillStyle
+          const primaryColorRgba = hexToRgba(settings.colors.primary, opacity);
+          
+          // Simple additive blend for effect (might need adjustment)
+          // For simplicity, let's primarily use primary color with opacity
+          ctx.fillStyle = primaryColorRgba;
           
           // Set font based on calculated size
           ctx.font = `${column.fontSize}px monospace`;
@@ -143,7 +169,7 @@ const MatrixBackground: React.FC = () => {
       if (cleanupFn) cleanupFn();
     };
 
-  }, []);
+  }, [settings]); // Add settings to dependency array
 
   return (
     <canvas
@@ -156,7 +182,7 @@ const MatrixBackground: React.FC = () => {
         width: '100vw',
         height: '100vh',
         zIndex: -1,
-        background: 'black',
+        background: settings.colors.background, // Use theme background
       }}
     />
   );

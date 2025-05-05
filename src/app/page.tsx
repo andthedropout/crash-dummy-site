@@ -7,6 +7,7 @@ import { MatrixBackground } from "@/components/layout/MatrixBackground"; // Rest
 import { CyberpunkButtons } from "@/components/ui/CyberpunkButtons"; // Use named import
 import Tilt from 'react-parallax-tilt'; // Import the tilt component
 import { usePageTransition } from "@/components/layout/PageTransitionContext";
+import { useSettings } from "@/context/SettingsContext"; // Import useSettings
 
 // // import { Header } from "@/components/layout/header";
 // // import { Hero } from "@/components/layout/hero";
@@ -17,6 +18,7 @@ export default function Home() {
   const [scope, animate] = useAnimate();
   const backgroundRef = useRef(null);
   const gifRef = useRef(null);
+  const { settings } = useSettings(); // Get settings
 
   // Handle navigation and sequenced animation effects
   useEffect(() => {
@@ -75,7 +77,7 @@ export default function Home() {
         transitionSpeed={2000} 
         glareEnable={true}
         glareMaxOpacity={0.5}
-        glareColor="#39FF14"
+        glareColor={settings.colors.primary} // Use primary color from settings
         glarePosition="all"
         glareBorderRadius="8px"
         className="absolute inset-0 z-[-2]" // Position fixed-like behind everything

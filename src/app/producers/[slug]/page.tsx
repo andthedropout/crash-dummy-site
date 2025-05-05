@@ -7,6 +7,27 @@ import { motion, useAnimate } from 'framer-motion';
 import { usePageTransition } from '@/components/layout/PageTransitionContext';
 import { CyberpunkButton } from '@/components/ui/CyberpunkButton';
 import { MatrixBackground as MatrixBackground3 } from '@/components/layout/MatrixBackground3';
+import { useSettings } from '@/context/SettingsContext';
+
+// Helper function defined locally
+const hexToRgba = (hex: string, alpha: number): string => {
+  let cleanHex = hex.startsWith('#') ? hex.slice(1) : hex;
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map(char => char + char).join('');
+  }
+  if (cleanHex.length !== 6) {
+    console.error("Invalid hex color for rgba conversion:", hex);
+    return `rgba(0, 0, 0, ${alpha})`; 
+  }
+  const r = parseInt(cleanHex.slice(0, 2), 16);
+  const g = parseInt(cleanHex.slice(2, 4), 16);
+  const b = parseInt(cleanHex.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+     console.error("Failed to parse hex color:", hex);
+     return `rgba(0, 0, 0, ${alpha})`;
+  }
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 // TODO: Move producer data to a shared location or fetch it
 const producersData = [
@@ -93,6 +114,7 @@ export default function ProducerDetailPage() {
   const { transitionState, nextRoute, startTransition, completeTransition } = usePageTransition();
   const [scope, animate] = useAnimate();
   const animatedRef = useRef(false); // Track if animation has run during this mount
+  const { settings } = useSettings(); // Get settings
   
   // Find the producer based on the slug
   const producer = producersData.find(p => p.slug === params.slug);
@@ -167,27 +189,40 @@ export default function ProducerDetailPage() {
   return (
     <motion.div 
       ref={scope} 
-      className="relative min-h-screen w-full flex flex-col items-center text-white p-4 pt-24 pb-12 overflow-y-auto" // Added overflow-y-auto
+      className="relative min-h-screen w-full flex flex-col items-center text-white p-4 pt-24 pb-12 overflow-y-auto uses-page-colors"
+      style={{
+        '--page-primary-color': settings.colors.primary,
+        '--page-secondary-color': settings.colors.secondary,
+        '--page-background-color': settings.colors.background,
+      } as React.CSSProperties}
     >
-      {/* Place MatrixBackground3 directly with fixed positioning */}
+      {/* Place MatrixBackground3 directly */}
       <div className="fixed inset-0 z-[-1] background-container">
          <MatrixBackground3 /> 
       </div>
       
-      {/* Back Button - Positioned top-left */}
+      {/* Back Button */}
       <div className="absolute top-8 left-12 z-50 back-button-container"> 
         <CyberpunkButton 
             text="BACK"
             margin="m-0"
             index={99} 
             onClick={handleBack}
+            primaryColor={settings.colors.primary}
+            secondaryColor={settings.colors.secondary}
           />
       </div>
 
-      {/* Content Area (No Tilt as per user's last edit) */}
-      <div className='w-full flex flex-col mt-12 items-center'> {/* Added centering wrapper */} 
-         <div className="w-full max-w-3xl h-64 md:h-80 lg:h-96 relative mb-8 overflow-hidden rounded-lg border-2 border-lime-500/50 shadow-lg shadow-lime-500/20 producer-image-container" style={{ transform: 'translateZ(20px)' }}>
-           {/* ... Image ... */}
+      {/* Content Area */}
+      <div className='w-full flex flex-col mt-12 items-center'> 
+         <div 
+           className="w-full max-w-3xl h-64 md:h-80 lg:h-96 relative mb-8 overflow-hidden rounded-lg border-2 shadow-lg producer-image-container"
+           style={{
+             transform: 'translateZ(20px)',
+             borderColor: hexToRgba(settings.colors.secondary, 0.5),
+             boxShadow: `0 0 15px ${hexToRgba(settings.colors.secondary, 0.2)}`
+           }}
+          >
            <Image
             src={producer.imgurl}
             alt={producer.title}
@@ -197,13 +232,28 @@ export default function ProducerDetailPage() {
             priority 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-          <h1 className="absolute bottom-4 left-4 text-4xl md:text-6xl font-bold text-lime-300 cyberpunk-title glitch-text producer-title" data-text={producer.title} style={{ transform: 'translateZ(40px)' }}>
+          <h1 
+            className="absolute bottom-4 left-4 text-4xl md:text-6xl font-bold cyberpunk-title glitch-text producer-title"
+            data-text={producer.title} 
+            style={{ transform: 'translateZ(40px)' }}
+           >
             {producer.title}
           </h1>
         </div>
 
-         <div className="bg-neutral-900/70 max-w-3xl w-full border border-lime-500/30 p-6 rounded-md backdrop-blur-sm shadow-md bio-card-container mb-12" style={{ transform: 'translateZ(10px)' }}> {/* Added w-full and mb */} 
-          <h2 className="text-2xl font-semibold text-lime-400 mb-4 font-mono">Bio</h2>
+         <div 
+           className="bg-neutral-900/70 max-w-3xl w-full border p-6 rounded-md backdrop-blur-sm shadow-md bio-card-container mb-12"
+           style={{
+             transform: 'translateZ(10px)',
+             borderColor: hexToRgba(settings.colors.secondary, 0.3)
+           }}
+         > 
+          <h2 
+            className="text-2xl font-semibold mb-4 font-mono"
+            style={{ color: settings.colors.primary }}
+          >
+            Bio
+          </h2>
           <p className="text-neutral-300 leading-relaxed whitespace-pre-wrap">{producer.bio}</p>
         </div>
       </div>

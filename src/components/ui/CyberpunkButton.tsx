@@ -1,5 +1,6 @@
 import React from 'react';
 import { usePageTransition } from '@/components/layout/PageTransitionContext';
+import { useSettings } from '@/context/SettingsContext';
 
 interface CyberpunkButtonProps {
   text: string;
@@ -9,22 +10,49 @@ interface CyberpunkButtonProps {
   onClick?: () => void;
   width?: string;
   height?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
 }
 
-export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, index, href, onClick, width, height }) => {
+export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({
+  text,
+  margin,
+  index,
+  href,
+  onClick,
+  width,
+  height,
+  primaryColor,
+  secondaryColor
+}) => {
   const { startTransition } = usePageTransition();
-  
+  const { settings } = useSettings();
+
+  const effectivePrimaryColor = primaryColor || settings.colors.primary || '#39FF14';
+  const effectiveSecondaryColor = secondaryColor || settings.colors.secondary || '#00FFFF';
+
   const effectiveOnClick = onClick ? onClick : () => {
     if (href) {
       startTransition(href);
     }
   };
   
+  const colorWithOpacity = (hex: string, opacity: number) => {
+    if (!/^#[0-9A-F]{6}$/i.test(hex)) {
+      console.warn(`Invalid hex color: ${hex}, using fallback.`);
+      hex = '#000000';
+    }
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
+
   const baseStyle: React.CSSProperties = {
     transformStyle: 'preserve-3d',
     transform: 'translateZ(0)',
     transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-    boxShadow: '0 5px 15px rgba(0,0,0,0.2), 0 0 5px rgba(57,255,20,0.2)',
+    boxShadow: `0 5px 15px rgba(0,0,0,0.2), 0 0 5px ${colorWithOpacity(effectiveSecondaryColor, 0.3)}`,
     cursor: 'pointer'
   };
   
@@ -39,28 +67,33 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
     <div
       key={text}
       className={`sci-fi-button tracer-button-${index} group relative ${margin} hover:z-depth-pop`}
-      style={baseStyle}
+      style={{
+        ...baseStyle,
+        '--button-primary-color': effectivePrimaryColor,
+        '--button-secondary-color': effectiveSecondaryColor,
+      } as React.CSSProperties}
       onClick={effectiveOnClick}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateZ(35px) scale(1.02)';
-        e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.4), 0 0 15px rgba(57,255,20,0.5)';
+        e.currentTarget.style.boxShadow = `0 15px 30px rgba(0,0,0,0.4), 0 0 15px ${colorWithOpacity(effectiveSecondaryColor, 0.6)}`;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateZ(0)';
-        e.currentTarget.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2), 0 0 5px rgba(57,255,20,0.2)';
+        e.currentTarget.style.boxShadow = `0 5px 15px rgba(0,0,0,0.2), 0 0 5px ${colorWithOpacity(effectiveSecondaryColor, 0.3)}`;
       }}
     >
       <div className="absolute -inset-4 rounded-lg overflow-hidden z-0 pointer-events-none">
         <div className="absolute inset-0 bg-black/10 backdrop-blur-sm rounded-lg"></div>
-        <div 
-          className="absolute inset-0 border border-lime-500/20 rounded-lg outer-glow"
-        ></div>
+        {/* <div 
+          className="absolute inset-0 border rounded-lg outer-glow"
+          style={{ borderColor: colorWithOpacity(effectiveSecondaryColor, 0.3) }}
+        ></div> */}
         <svg className="absolute inset-0 w-full h-full opacity-70">
           <rect 
             x="0" y="0" 
             width="100%" height="100%" 
             fill="none" 
-            stroke="#39FF14" 
+            stroke={effectivePrimaryColor} 
             strokeOpacity="0.15"
             strokeWidth="1" 
             strokeDasharray="10,15"
@@ -69,6 +102,7 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           <path
             d="M0,25 Q50,18 100,25"
             className="tracer-line"
+            stroke={effectivePrimaryColor}
             style={{ 
               strokeOpacity: 0.1,
               strokeWidth: 0.5
@@ -77,43 +111,45 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           
           {index === 0 && (
             <>
-              <line x1="10%" y1="0" x2="20%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="3,10" className="tracer-line" style={{animationDelay: "-1.3s"}} />
-              <line x1="30%" y1="0" x2="40%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="5,8" className="tracer-line" style={{animationDelay: "-4.7s"}} />
-              <line x1="60%" y1="0" x2="70%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="7,12" className="tracer-line" style={{animationDelay: "-2.2s"}} />
-              <line x1="80%" y1="0" x2="90%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="4,15" className="tracer-line" style={{animationDelay: "-5.9s"}} />
+              <line x1="10%" y1="0" x2="20%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="3,10" className="tracer-line" style={{animationDelay: "-1.3s"}} />
+              <line x1="30%" y1="0" x2="40%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="5,8" className="tracer-line" style={{animationDelay: "-4.7s"}} />
+              <line x1="60%" y1="0" x2="70%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="7,12" className="tracer-line" style={{animationDelay: "-2.2s"}} />
+              <line x1="80%" y1="0" x2="90%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="4,15" className="tracer-line" style={{animationDelay: "-5.9s"}} />
             </>
           )}
           
           {index === 1 && (
             <>
-              <line x1="15%" y1="0" x2="25%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="6,12" className="tracer-line" style={{animationDelay: "-3.8s"}} />
-              <line x1="35%" y1="0" x2="45%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="4,9" className="tracer-line" style={{animationDelay: "-6.1s"}} />
-              <line x1="55%" y1="0" x2="65%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="8,10" className="tracer-line" style={{animationDelay: "-1.5s"}} />
-              <line x1="75%" y1="0" x2="85%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="5,14" className="tracer-line" style={{animationDelay: "-8.3s"}} />
+              <line x1="15%" y1="0" x2="25%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="6,12" className="tracer-line" style={{animationDelay: "-3.8s"}} />
+              <line x1="35%" y1="0" x2="45%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="4,9" className="tracer-line" style={{animationDelay: "-6.1s"}} />
+              <line x1="55%" y1="0" x2="65%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="8,10" className="tracer-line" style={{animationDelay: "-1.5s"}} />
+              <line x1="75%" y1="0" x2="85%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="5,14" className="tracer-line" style={{animationDelay: "-8.3s"}} />
             </>
           )}
           
           {index === 2 && (
             <>
-              <line x1="5%" y1="0" x2="15%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="7,13" className="tracer-line" style={{animationDelay: "-5.2s"}} />
-              <line x1="25%" y1="0" x2="35%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="3,11" className="tracer-line" style={{animationDelay: "-9.7s"}} />
-              <line x1="50%" y1="0" x2="60%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="9,8" className="tracer-line" style={{animationDelay: "-2.9s"}} />
-              <line x1="85%" y1="0" x2="95%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="6,15" className="tracer-line" style={{animationDelay: "-7.1s"}} />
+              <line x1="5%" y1="0" x2="15%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="7,13" className="tracer-line" style={{animationDelay: "-5.2s"}} />
+              <line x1="25%" y1="0" x2="35%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="3,11" className="tracer-line" style={{animationDelay: "-9.7s"}} />
+              <line x1="50%" y1="0" x2="60%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="9,8" className="tracer-line" style={{animationDelay: "-2.9s"}} />
+              <line x1="85%" y1="0" x2="95%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="6,15" className="tracer-line" style={{animationDelay: "-7.1s"}} />
             </>
           )}
           
           {index === 3 && (
             <>
-              <line x1="20%" y1="0" x2="10%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="4,14" className="tracer-line" style={{animationDelay: "-12.3s"}} />
-              <line x1="40%" y1="0" x2="30%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="8,7" className="tracer-line" style={{animationDelay: "-6.8s"}} />
-              <line x1="65%" y1="0" x2="55%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="5,9" className="tracer-line" style={{animationDelay: "-3.4s"}} />
-              <line x1="90%" y1="0" x2="80%" y2="100%" stroke="#39FF14" strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="7,11" className="tracer-line" style={{animationDelay: "-8.9s"}} />
+              <line x1="20%" y1="0" x2="10%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="4,14" className="tracer-line" style={{animationDelay: "-12.3s"}} />
+              <line x1="40%" y1="0" x2="30%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="8,7" className="tracer-line" style={{animationDelay: "-6.8s"}} />
+              <line x1="65%" y1="0" x2="55%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="5,9" className="tracer-line" style={{animationDelay: "-3.4s"}} />
+              <line x1="90%" y1="0" x2="80%" y2="100%" stroke={effectivePrimaryColor} strokeOpacity="0.1" strokeWidth="0.3" strokeDasharray="7,11" className="tracer-line" style={{animationDelay: "-8.9s"}} />
             </>
           )}
           
           {index === 0 && (
             <path 
               className="tracer-line"
+              stroke={effectivePrimaryColor}
+              fill="none"
               d="M5,5 C40,20 60,15 90,5 L95,30 C80,60 20,50 5,35 Z"
               style={{
                 animation: "trace 11.3s cubic-bezier(0.4, 0, 0.2, 1) infinite",
@@ -125,6 +161,8 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           {index === 1 && (
             <path 
               className="tracer-line"
+              stroke={effectivePrimaryColor}
+              fill="none"
               d="M15,8 C30,40 70,30 85,12 L78,50 C65,45 25,55 12,20 Z"
               style={{
                 animation: "trace 8.7s cubic-bezier(0.25, 0.1, 0.25, 1) infinite",
@@ -136,6 +174,8 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           {index === 2 && (
             <path 
               className="tracer-line"
+              stroke={effectivePrimaryColor}
+              fill="none"
               d="M30,15 Q50,5 70,25 T50,40 T30,15"
               style={{
                 animation: "trace 15.5s ease-in-out infinite",
@@ -147,6 +187,7 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           {index === 3 && (
             <polyline 
               className="tracer-line"
+              stroke={effectivePrimaryColor}
               points="20,10 35,25 50,15 65,30 80,20"
               fill="none"
               style={{
@@ -158,33 +199,33 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           
           {index === 0 && (
             <>
-              <circle className="data-point" cx="10" cy="10" />
-              <circle className="data-point" cx="90" cy="25" />
-              <circle className="data-point" cx="50" cy="60" />
+              <circle className="data-point" cx="10" cy="10" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
+              <circle className="data-point" cx="90" cy="25" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
+              <circle className="data-point" cx="50" cy="60" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
             </>
           )}
           
           {index === 1 && (
             <>
-              <circle className="data-point" cx="25" cy="15" />
-              <circle className="data-point" cx="70" cy="35" />
-              <circle className="data-point" cx="40" cy="50" />
+              <circle className="data-point" cx="25" cy="15" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
+              <circle className="data-point" cx="70" cy="35" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
+              <circle className="data-point" cx="40" cy="50" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
             </>
           )}
           
           {index === 2 && (
             <>
-              <circle className="data-point" cx="35" cy="20" />
-              <circle className="data-point" cx="65" cy="45" />
-              <circle className="data-point" cx="20" cy="55" />
+              <circle className="data-point" cx="35" cy="20" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
+              <circle className="data-point" cx="65" cy="45" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
+              <circle className="data-point" cx="20" cy="55" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
             </>
           )}
           
           {index === 3 && (
             <>
-              <circle className="data-point" cx="45" cy="10" />
-              <circle className="data-point" cx="75" cy="40" />
-              <circle className="data-point" cx="30" cy="60" />
+              <circle className="data-point" cx="45" cy="10" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
+              <circle className="data-point" cx="75" cy="40" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
+              <circle className="data-point" cx="30" cy="60" style={{ fill: effectivePrimaryColor, filter: `drop-shadow(0 0 3px ${effectiveSecondaryColor})` }} />
             </>
           )}
           
@@ -192,11 +233,15 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
             className="flicker"
             x="0" y="0"
             width="100%" height="100%"
+            style={{ fill: colorWithOpacity(effectivePrimaryColor, 0.03) }} 
           />
         </svg>
       </div>
       
-      <div className="absolute inset-0 opacity-0 blur-md bg-lime-500/30 transition-opacity duration-500 ease-in-out group-hover:opacity-100 rounded-md" />
+      <div 
+        className="absolute inset-0 opacity-0 blur-md transition-opacity duration-500 ease-in-out group-hover:opacity-100 rounded-md"
+        style={{ backgroundColor: colorWithOpacity(effectiveSecondaryColor, 0.4) }} 
+      />
       
       <svg 
         className="absolute inset-0 h-full w-full" 
@@ -206,19 +251,25 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
       >
         <path 
           d="M380 14v42c0 7.732-6.268 14-14 14h-70l-8-8h-190l-8 8h-70c-7.732 0-14-6.268-14-14v-42c0-7.732 6.268-14 14-14h70l8 8h190l8-8h70c7.732 0 14 6.268 14 14z" 
-          className="fill-black/50 transition-all duration-500 ease-in-out group-hover:fill-black/90 group-hover:shadow-[inset_0_0_20px_rgba(57,255,20,0.5)]"
+          className="fill-black/50 transition-all duration-500 ease-in-out group-hover:fill-black/90"
+          style={{ filter: `drop-shadow(0 0 10px ${colorWithOpacity(effectiveSecondaryColor, 0.6)})` }}
         />
         
         <path 
           d="M380 14v42c0 7.732-6.268 14-14 14h-70l-8-8h-190l-8 8h-70c-7.732 0-14-6.268-14-14v-42c0-7.732 6.268-14 14-14h70l8 8h190l8-8h70c7.732 0 14 6.268 14 14z" 
           className="fill-lime-500/0 transition-all duration-500 ease-in-out group-hover:fill-lime-500/20"
+          style={{ fill: colorWithOpacity(effectiveSecondaryColor, 0) }}
+          onMouseEnter={(e) => (e.currentTarget.style.fill = colorWithOpacity(effectiveSecondaryColor, 0.25))}
+          onMouseLeave={(e) => (e.currentTarget.style.fill = colorWithOpacity(effectiveSecondaryColor, 0))}
         />
         
         <path 
           d="M380 14v42c0 7.732-6.268 14-14 14h-70l-8-8h-190l-8 8h-70c-7.732 0-14-6.268-14-14v-42c0-7.732 6.268-14 14-14h70l8 8h190l8-8h70c7.732 0 14 6.268 14 14z" 
-          className="border-glow fill-none stroke-lime-500/80 stroke-[2] transition-all duration-300 group-hover:stroke-lime-400"
+          className="border-glow fill-none stroke-[2] transition-all duration-300 group-hover:stroke-lime-400"
+          stroke={colorWithOpacity(effectiveSecondaryColor, 0.9)}
           strokeDasharray="30,15,8,15"
           style={{
+            stroke: colorWithOpacity(effectiveSecondaryColor, 0.9),
             animation: index === 0 ? "dashoffset 7.2s linear infinite" :
                       index === 1 ? "dashoffset 12.3s linear infinite reverse" :
                       index === 2 ? "dashoffset 9.5s linear infinite" :
@@ -228,11 +279,14 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
                             index === 2 ? "-3.5s" :
                             "-8.9s"
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.stroke = effectiveSecondaryColor)}
+          onMouseLeave={(e) => (e.currentTarget.style.stroke = colorWithOpacity(effectiveSecondaryColor, 0.9))}
         />
         
         <path 
           d="M385 10v50c0 8-6.268 15-14 15h-75l-10-10h-185l-10 10h-75c-8 0-15-7-15-15v-50c0-8 7-15 15-15h75l10 10h185l10-10h75c8 0 14 7 14 15z" 
           className="tracer-path"
+          stroke={effectivePrimaryColor}
           style={{
             animation: index === 0 ? "tracer 15.5s linear infinite alternate" :
                       index === 1 ? "tracer 11.9s linear infinite alternate-reverse" :
@@ -250,37 +304,56 @@ export const CyberpunkButton: React.FC<CyberpunkButtonProps> = ({ text, margin, 
           width="370" height="60" 
           rx="12" 
           className="pulse-glow fill-none stroke-lime-500/10 stroke-[1]"
+          style={{ stroke: colorWithOpacity(effectiveSecondaryColor, 0.2) }}
         />
         
         <path 
           d="M14 0L0 14M366 0L380 14M14 70L0 56M366 70L380 56" 
           className="corner-glow stroke-lime-500/80 stroke-3 transition-all duration-300 group-hover:stroke-lime-400 group-hover:stroke-[4]"
+          style={{ stroke: colorWithOpacity(effectiveSecondaryColor, 0.8) }}
+          onMouseEnter={(e) => (e.currentTarget.style.stroke = effectiveSecondaryColor)}
+          onMouseLeave={(e) => (e.currentTarget.style.stroke = colorWithOpacity(effectiveSecondaryColor, 0.8))}
         />
         
         <path 
           d={`M${60 + index*30} 0v10 M${320 - index*30} 0v10 M${60 + index*30} 70v-10 M${320 - index*30} 70v-10`}
           className="tech-detail stroke-lime-500/80 stroke-2 transition-all duration-300 group-hover:stroke-lime-400/90 group-hover:stroke-[3]"
-          strokeDasharray="0"
-          strokeDashoffset="0"
+          style={{ stroke: colorWithOpacity(effectiveSecondaryColor, 0.8) }}
+          onMouseEnter={(e) => (e.currentTarget.style.stroke = effectiveSecondaryColor)}
+          onMouseLeave={(e) => (e.currentTarget.style.stroke = colorWithOpacity(effectiveSecondaryColor, 0.8))}
         />
         
         <path 
           d={`M30 35h${35 + index*20} M350 35h-${35 + index*20}`}
           className="circuit-pattern stroke-lime-500/80 stroke-2 transition-all duration-300 group-hover:stroke-lime-400/90 group-hover:stroke-[3]"
+          style={{ stroke: colorWithOpacity(effectiveSecondaryColor, 0.8) }}
           strokeDasharray="6,6"
+          onMouseEnter={(e) => (e.currentTarget.style.stroke = effectiveSecondaryColor)}
+          onMouseLeave={(e) => (e.currentTarget.style.stroke = colorWithOpacity(effectiveSecondaryColor, 0.8))}
         />
       </svg>
-      
-      <div className="relative flex h-16 w-full items-center justify-center bg-transparent text-center text-2xl font-semibold text-lime-500 transition-all duration-500 group-hover:text-lime-300 z-10 px-12">
-        <span className="text-glow relative tracking-widest transition-all duration-500">
+
+      <div 
+        className="relative flex h-16 w-full items-center justify-center bg-transparent text-center text-2xl font-semibold transition-all duration-500 z-10 px-12"
+        style={{ color: effectivePrimaryColor }}
+      >
+        <span 
+          className="text-glow relative tracking-widest transition-all duration-500 group-hover:text-shadow-glow"
+        >
           {text}
         </span>
         
-        <span className="bracket-glow absolute left-8 text-3xl font-light opacity-70 transition-all duration-500 group-hover:opacity-100 group-hover:text-lime-300">
+        <span 
+          className="bracket-glow absolute left-8 text-3xl font-light opacity-70 transition-all duration-500 group-hover:opacity-100"
+          style={{ color: effectiveSecondaryColor }}
+        >
           &#10214;
         </span>
         
-        <span className="bracket-glow absolute right-8 text-3xl font-light opacity-70 transition-all duration-500 group-hover:opacity-100 group-hover:text-lime-300">
+        <span 
+          className="bracket-glow absolute right-8 text-3xl font-light opacity-70 transition-all duration-500 group-hover:opacity-100"
+          style={{ color: effectiveSecondaryColor }}
+        >
           &#10215;
         </span>
       </div>

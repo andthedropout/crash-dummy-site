@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransitionProvider } from "@/components/layout/PageTransitionContext";
 import { MusicPlayerProvider } from "@/context/MusicPlayerContext";
+import { SettingsProvider } from "@/context/SettingsContext";
 import { GlobalMusicPlayer } from "@/components/layout/GlobalMusicPlayer";
 import { PageTransitionWrapper } from "@/components/layout/PageTransitionWrapper";
 
@@ -36,14 +37,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <SettingsProvider>
           <MusicPlayerProvider>
             <PageTransitionProvider>
-              <PageTransitionWrapper>
-                {children}
-              </PageTransitionWrapper>
+                <PageTransitionWrapper>
+              {children}
+                </PageTransitionWrapper>
             </PageTransitionProvider>
             <GlobalMusicPlayer />
           </MusicPlayerProvider>
+          </SettingsProvider>
         </ThemeProvider>
       </body>
     </html>

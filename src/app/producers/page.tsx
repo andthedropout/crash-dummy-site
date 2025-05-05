@@ -9,6 +9,7 @@ import { ProducerCarousel } from '@/components/producers/ProducerCarousel'; // I
 import { CyberpunkButton } from '@/components/ui/CyberpunkButton'; // Import the button
 import { CyberSquareButton } from '@/components/ui/CyberSquareButton'; // Import the square button
 import { usePageTransition } from '@/components/layout/PageTransitionContext';
+import { useSettings } from '@/context/SettingsContext'; // Import useSettings
 
 // Updated Producer Data with specific names and placeholders
 const sampleProducers = [
@@ -34,6 +35,7 @@ export default function ProducersPage() {
   const [scope, animate] = useAnimate();
   const [animationComplete, setAnimationComplete] = useState(false);
   const animatedRef = useRef(false); // Track if animation has run during this mount
+  const { settings } = useSettings(); // Call useSettings
 
   // Lifted state for carousel index
   const initialIndex = useMemo(() => Math.floor(sampleProducers.length / 2), []);
@@ -116,7 +118,15 @@ export default function ProducersPage() {
   }, [transitionState, nextRoute, animate, completeTransition, router]);
 
   return (
-    <div ref={scope} className="relative h-screen w-full flex flex-col overflow-hidden">
+    <div 
+      ref={scope} 
+      className="relative h-screen w-full flex flex-col overflow-hidden uses-page-colors" // Add uses-page-colors
+      style={{
+        '--page-primary-color': settings.colors.primary,
+        '--page-secondary-color': settings.colors.secondary,
+        '--page-background-color': settings.colors.background,
+      } as React.CSSProperties} // Set CSS Variables
+    >
       {/* Background with Tilt */}
       <Tilt
         tiltMaxAngleX={1} 
@@ -125,7 +135,7 @@ export default function ProducersPage() {
         transitionSpeed={1500}
         glareEnable={true}
         glareMaxOpacity={0.3}
-        glareColor="#39FF14"
+        glareColor={settings.colors.primary} // Use primary for glare
         glarePosition="all"
         className="absolute inset-0 z-[-1] matrix-background-container" // Added class for targeting
         style={{ transformStyle: 'preserve-3d' }}
@@ -159,7 +169,8 @@ export default function ProducersPage() {
               margin="m-0" 
               index={99} 
               onClick={handleBack}
-              // width="150px" 
+              primaryColor={settings.colors.primary} // Pass primary color
+              secondaryColor={settings.colors.secondary} // Pass secondary color
             />
           </div>
 
@@ -176,7 +187,7 @@ export default function ProducersPage() {
           >
             <div className="cyberpunk-title relative">
               <div className="glitch-container">
-                <h1 className="text-5xl font-bold text-lime-300 glitch-text" data-text="Choose Your Producer">Choose Your Producer</h1>
+                <h1 className="text-5xl font-bold glitch-text" data-text="Choose Your Producer">Choose Your Producer</h1>
               </div>
               <div className="title-decoration">
                 <div className="scan-line"></div>
@@ -184,7 +195,7 @@ export default function ProducersPage() {
                 <div className="corner-decoration top-right"></div>
                 <div className="corner-decoration bottom-left"></div>
                 <div className="corner-decoration bottom-right"></div>
-                <div className="title-data-text">SYS://PRODUCER_SELECT.EXE</div>
+                <div className="title-data-text" style={{ color: settings.colors.primary }}>SYS://PRODUCER_SELECT.EXE</div>
               </div>
             </div>
           </motion.div>
@@ -197,8 +208,14 @@ export default function ProducersPage() {
             />
           </div>
 
-          {/* Carousel Navigation Arrows - Centered properly */}
-          <div className="nav-arrow-container fixed bottom-24 left-0 right-0 mx-auto w-fit flex space-x-12 z-[60]">
+          {/* Carousel Navigation Arrows - Set CSS variables on the container */}
+          <div 
+            className="nav-arrow-container fixed bottom-24 left-0 right-0 mx-auto w-fit flex space-x-12 z-[60]"
+            style={{
+              '--csb-primary': settings.colors.primary,
+              '--csb-secondary': settings.colors.secondary,
+            } as React.CSSProperties}
+          >
             <CyberSquareButton
               text="<"
               onClick={handlePrev}
